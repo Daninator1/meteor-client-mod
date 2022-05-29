@@ -6,6 +6,7 @@
 package meteordevelopment.meteorclient.systems.modules.movement;
 
 import meteordevelopment.meteorclient.events.entity.BoatMoveEvent;
+import meteordevelopment.meteorclient.events.entity.LivingEntityMoveEvent;
 import meteordevelopment.meteorclient.events.packets.PacketEvent;
 import meteordevelopment.meteorclient.mixininterface.IVec3d;
 import meteordevelopment.meteorclient.settings.BoolSetting;
@@ -16,10 +17,11 @@ import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.player.PlayerUtils;
 import meteordevelopment.orbit.EventHandler;
+import net.minecraft.entity.Entity;
 import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
 import net.minecraft.util.math.Vec3d;
 
-public class BoatFly extends Module {
+public class EntityFly extends Module {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
     private final Setting<Double> speed = sgGeneral.add(new DoubleSetting.Builder()
@@ -55,15 +57,31 @@ public class BoatFly extends Module {
             .build()
     );
 
-    public BoatFly() {
-        super(Categories.Movement, "boat-fly", "Transforms your boat into a plane.");
+    public EntityFly() {
+        super(Categories.Movement, "entity-fly", "Allows you to fly on any rideable entity.");
     }
 
     @EventHandler
     private void onBoatMove(BoatMoveEvent event) {
-        if (event.boat.getPrimaryPassenger() != mc.player) return;
+        Fly(event.boat, event.boat.getVelocity());
+    }
 
-        event.boat.setYaw(mc.player.getYaw());
+    @EventHandler
+    private void onLivingEntityMove(LivingEntityMoveEvent event) {
+        Fly(event.entity, event.movement);
+    }
+
+    @EventHandler
+    private void onReceivePacket(PacketEvent.Receive event) {
+        if (event.packet instanceof VehicleMoveS2CPacket && cancelServerPackets.get()) {
+            event.cancel();
+        }
+    }
+
+    private void Fly(Entity entity, Vec3d velocity) {
+        if (entity.getPrimaryPassenger() != mc.player) return;
+
+        entity.setYaw(mc.player.getYaw());
 
         // Horizontal movement
         Vec3d vel = PlayerUtils.getHorizontalVelocity(speed.get());
@@ -77,13 +95,6 @@ public class BoatFly extends Module {
         else velY -= fallSpeed.get() / 20;
 
         // Apply velocity
-        ((IVec3d) event.boat.getVelocity()).set(velX, velY, velZ);
-    }
-
-    @EventHandler
-    private void onReceivePacket(PacketEvent.Receive event) {
-        if (event.packet instanceof VehicleMoveS2CPacket && cancelServerPackets.get()) {
-            event.cancel();
-        }
+        ((IVec3d) velocity).set(velX, velY, velZ);
     }
 }

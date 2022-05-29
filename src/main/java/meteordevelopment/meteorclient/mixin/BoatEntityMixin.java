@@ -8,7 +8,7 @@ package meteordevelopment.meteorclient.mixin;
 import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.events.entity.BoatMoveEvent;
 import meteordevelopment.meteorclient.systems.modules.Modules;
-import meteordevelopment.meteorclient.systems.modules.movement.BoatFly;
+import meteordevelopment.meteorclient.systems.modules.movement.EntityFly;
 import net.minecraft.entity.vehicle.BoatEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -30,13 +30,13 @@ public class BoatEntityMixin {
 
     @Redirect(method = "updatePaddles", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/vehicle/BoatEntity;pressingLeft:Z"))
     private boolean onUpdatePaddlesPressingLeft(BoatEntity boat) {
-        if (Modules.get().isActive(BoatFly.class)) return false;
+        if (Modules.get().isActive(EntityFly.class)) return false;
         return pressingLeft;
     }
 
     @Redirect(method = "updatePaddles", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/vehicle/BoatEntity;pressingRight:Z"))
     private boolean onUpdatePaddlesPressingRight(BoatEntity boat) {
-        if (Modules.get().isActive(BoatFly.class)) return false;
+        if (Modules.get().isActive(EntityFly.class)) return false;
         return pressingRight;
     }
 }

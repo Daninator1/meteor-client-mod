@@ -450,7 +450,7 @@ public class Modules extends System<Modules> {
         add(new AutoJump());
         add(new AutoWalk());
         add(new Blink());
-        add(new BoatFly());
+        add(new EntityFly());
         add(new ClickTP());
         add(new ElytraBoost());
         add(new ElytraFly());

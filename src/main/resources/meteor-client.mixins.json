@@ -116,6 +116,7 @@
     "MouseMixin",
     "MultiplayerScreenMixin",
     "ParticleManagerMixin",
+    "PigEntityMixin",
     "PlayerArmorSlotMixin",
     "PlayerEntityMixin",
     "PlayerEntityRendererMixin",

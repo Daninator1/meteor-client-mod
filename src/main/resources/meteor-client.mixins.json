@@ -101,6 +101,7 @@
     "KeyBindingAccessor",
     "KeyboardInputMixin",
     "KeyboardMixin",
+    "LecternScreenMixin",
     "LightmapTextureManagerMixin",
     "LightningEntityRendererMixin",
     "LivingEntityAccessor",

@@ -568,6 +568,7 @@ public class Modules extends System<Modules> {
         add(new ServerSpoof());
         add(new InventoryTweaks());
         add(new LecternCrash());
+        add(new BoatCrash());
     }
 
     public static class ModuleRegistry extends Registry<Module> {

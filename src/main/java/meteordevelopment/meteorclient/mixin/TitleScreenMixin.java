@@ -52,7 +52,7 @@ public class TitleScreenMixin extends Screen {
                         .message("Your version: %s", MeteorClient.VERSION)
                         .message("Latest version: %s", latestVer)
                         .message("Do you want to update?")
-                        .onYes(() -> Util.getOperatingSystem().open("https://meteorclient.com/"))
+                        .onYes(() -> Util.getOperatingSystem().open("https://github.com/Daninator1/meteor-client-mod/releases/tag/latest"))
                         .onNo(() -> OkPrompt.create()
                             .title("Are you sure?")
                             .message("Using old versions of Meteor is not recommended")

@@ -8,6 +8,7 @@ package meteordevelopment.meteorclient.systems.modules.world;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.settings.*;
+import meteordevelopment.meteorclient.systems.friends.Friends;
 import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.player.InvUtils;
@@ -19,6 +20,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -103,6 +105,7 @@ public class Flamethrower extends Module {
             if (!entities.get().getBoolean(entity.getType()) || !PlayerUtils.isWithin(entity, distance.get())) continue;
             if (entity.isFireImmune()) continue;
             if (entity == mc.player) continue;
+            if (!Friends.get().shouldAttack((PlayerEntity) entity)) continue;
             if (!targetBabies.get() && entity instanceof LivingEntity && ((LivingEntity)entity).isBaby()) continue;
 
             boolean success = selectSlot();

@@ -10,19 +10,30 @@ import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.misc.NameProtect;
 import meteordevelopment.meteorclient.systems.proxies.Proxies;
 import meteordevelopment.meteorclient.systems.proxies.Proxy;
+import meteordevelopment.meteorclient.utils.misc.FriendServerEntry;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
+import net.minecraft.client.gui.screen.multiplayer.MultiplayerServerListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.network.LanServerInfo;
+import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MultiplayerScreen.class)
-public class MultiplayerScreenMixin extends Screen {
+public abstract class MultiplayerScreenMixin extends Screen {
+    @Shadow
+    protected MultiplayerServerListWidget serverListWidget;
+
+    @Shadow
+    protected abstract void connect(ServerInfo entry);
+
     private int textColor1;
     private int textColor2;
 
@@ -69,5 +80,14 @@ public class MultiplayerScreenMixin extends Screen {
 
         textRenderer.drawWithShadow(matrices, left, x, y, textColor1);
         if (right != null) textRenderer.drawWithShadow(matrices, right, x + textRenderer.getWidth(left), y, textColor2);
+    }
+
+    @Inject(method = "connect", at = @At("TAIL"))
+    private void onConnect(CallbackInfo info) {
+        MultiplayerServerListWidget.Entry entry = this.serverListWidget.getSelectedOrNull();
+        if (entry instanceof FriendServerEntry) {
+            LanServerInfo lanServerInfo = ((FriendServerEntry) entry).getLanServerEntry();
+            this.connect(new ServerInfo(lanServerInfo.getMotd(), lanServerInfo.getAddressPort(), true));
+        }
     }
 }

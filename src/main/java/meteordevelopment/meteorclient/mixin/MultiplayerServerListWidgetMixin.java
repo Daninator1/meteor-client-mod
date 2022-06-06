@@ -5,7 +5,9 @@
 
 package meteordevelopment.meteorclient.mixin;
 
+import meteordevelopment.meteorclient.utils.misc.FriendServer;
 import meteordevelopment.meteorclient.utils.misc.FriendServerEntry;
+import meteordevelopment.meteorclient.utils.network.Http;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerServerListWidget;
@@ -30,8 +32,12 @@ public class MultiplayerServerListWidgetMixin extends AlwaysSelectedEntryListWid
 
     @Inject(method = "updateEntries", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screen/multiplayer/MultiplayerServerListWidget;servers:Ljava/util/List;"))
     private void onUpdateEntries(CallbackInfo callbackInfo) {
-        var entry = new FriendServerEntry(this.screen, new LanServerInfo("SERVER_NAME", "SERVER_IP"));
-        this.addEntry(entry);
+        FriendServer[] friendServers = Http.get("http://localhost:5000/friendServers").sendJson(FriendServer[].class);
+
+        for (FriendServer friendServer : friendServers) {
+            var entry = new FriendServerEntry(this.screen, new LanServerInfo(friendServer.playerName, friendServer.getServerAddress()), friendServer.friendName);
+            this.addEntry(entry);
+        }
     }
 }
 

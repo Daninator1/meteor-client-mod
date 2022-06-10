@@ -12,7 +12,7 @@ import net.minecraft.client.gui.screen.ingame.LecternScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.screen.LecternScreenHandler;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(LecternScreen.class)
@@ -30,7 +30,7 @@ public abstract class LecternScreenMixin extends BookScreen implements ScreenHan
                 28,
                 120,
                 20,
-                new LiteralText("Crash"),
+                Text.literal("Crash"),
                 button -> lecternCrash.crash())
             );
         }

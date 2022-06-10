@@ -12,16 +12,14 @@ import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerServerListWidget;
 import net.minecraft.client.network.LanServerInfo;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 
 @Environment(value = EnvType.CLIENT)
 public class FriendServerEntry extends MultiplayerServerListWidget.Entry {
     private static final int field_32386 = 32;
     private final Text titleText;
-    private static final Text HIDDEN_ADDRESS_TEXT = new TranslatableText("selectServer.hiddenAddress");
+    private static final Text HIDDEN_ADDRESS_TEXT = Text.translatable("selectServer.hiddenAddress");
     private final MultiplayerScreen screen;
     protected final MinecraftClient client;
     protected final LanServerInfo server;
@@ -61,6 +59,6 @@ public class FriendServerEntry extends MultiplayerServerListWidget.Entry {
 
     @Override
     public Text getNarration() {
-        return new TranslatableText("narrator.select", new LiteralText("").append(titleText).append(" ").append(this.server.getMotd()));
+        return Text.translatable("narrator.select", Text.literal("").append(titleText).append(" ").append(this.server.getMotd()));
     }
 }

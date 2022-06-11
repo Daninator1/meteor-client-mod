@@ -40,6 +40,8 @@ public class FakeClientPlayer {
 
     @EventHandler
     private static void onGameJoined(GameJoinedEvent event) {
+        //TODO: fix exception
+        //world = new ClientWorld(new ClientPlayNetworkHandler(mc, null, new ClientConnection(NetworkSide.CLIENTBOUND), mc.getSession().getProfile(), null), new ClientWorld.Properties(Difficulty.NORMAL, false, false), World.OVERWORLD, RegistryEntry.of(BuiltinRegistries.DIMENSION_TYPE.get(DimensionTypes.OVERWORLD)), 1, 1, mc::getProfiler, null, false, 0);
     }
 
     public static PlayerEntity getPlayer() {

@@ -5,8 +5,10 @@
 
 package meteordevelopment.meteorclient.utils.misc;
 
-public class FriendServer {
-    public String friendName;
+import java.util.UUID;
+
+public class PlayStatusEntry {
+    public UUID friendId;
     public String playerName;
     public String serverHost;
     public Integer serverPort;

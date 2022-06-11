@@ -74,9 +74,9 @@ public class Accounts extends System<Accounts> implements Iterable<Account<?>> {
 
             try {
                 Account<?> account = switch (type) {
-                    case Cracked ->    new CrackedAccount(null).fromTag(t);
-                    case Premium ->    new PremiumAccount(null, null).fromTag(t);
-                    case Microsoft ->  new MicrosoftAccount(null).fromTag(t);
+                    case Cracked -> new CrackedAccount(null).fromTag(t);
+                    case Premium -> new PremiumAccount(null, null).fromTag(t);
+                    case Microsoft -> new MicrosoftAccount(null).fromTag(t);
                     case TheAltening -> new TheAlteningAccount(null).fromTag(t);
                 };
 

@@ -14,10 +14,12 @@ import meteordevelopment.meteorclient.gui.widgets.containers.WTable;
 import meteordevelopment.meteorclient.gui.widgets.input.WTextBox;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WMinus;
 import meteordevelopment.meteorclient.gui.widgets.pressable.WPlus;
-import meteordevelopment.meteorclient.settings.*;
+import meteordevelopment.meteorclient.settings.BoolSetting;
+import meteordevelopment.meteorclient.settings.ColorSetting;
+import meteordevelopment.meteorclient.settings.SettingGroup;
+import meteordevelopment.meteorclient.settings.Settings;
 import meteordevelopment.meteorclient.systems.friends.Friend;
 import meteordevelopment.meteorclient.systems.friends.Friends;
-import meteordevelopment.meteorclient.systems.friends.PlayStatus;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.NbtUtils;
 import meteordevelopment.meteorclient.utils.network.MeteorExecutor;
@@ -59,45 +61,6 @@ public class FriendsTab extends Tab {
                     .defaultValue(false)
                     .onChanged(aBoolean -> Friends.get().attack = aBoolean)
                     .onModuleActivated(booleanSetting -> booleanSetting.set(Friends.get().attack))
-                    .build()
-            );
-
-            SettingGroup sgPlayStatus = settings.createGroup("Play status");
-
-            sgPlayStatus.add(
-                new BoolSetting.Builder()
-                    .name("enabled")
-                    .description("Whether to enable sending/receiving play status.")
-                    .defaultValue(false)
-                    .onChanged(enabled -> PlayStatus.get().enabled = enabled)
-                    .onModuleActivated(booleanSetting -> booleanSetting.set(PlayStatus.get().enabled))
-                    .build()
-            );
-
-            sgPlayStatus.add(
-                new StringSetting.Builder()
-                    .name("name")
-                    .description("Your name.")
-                    .onChanged(name -> PlayStatus.get().name = name)
-                    .onModuleActivated(stringSetting -> stringSetting.set(PlayStatus.get().name))
-                    .build()
-            );
-
-            sgPlayStatus.add(
-                new StringSetting.Builder()
-                    .name("server")
-                    .description("The server to use for play status.")
-                    .onChanged(server -> PlayStatus.get().server = server)
-                    .onModuleActivated(stringSetting -> stringSetting.set(PlayStatus.get().server))
-                    .build()
-            );
-
-            sgPlayStatus.add(
-                new StringSetting.Builder()
-                    .name("api-key")
-                    .description("The API key to use for the server.")
-                    .onChanged(apiKey -> PlayStatus.get().apiKey = apiKey)
-                    .onModuleActivated(stringSetting -> stringSetting.set(PlayStatus.get().apiKey))
                     .build()
             );
 

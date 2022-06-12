@@ -76,6 +76,15 @@ public class FriendsTab extends Tab {
 
             sgPlayStatus.add(
                 new StringSetting.Builder()
+                    .name("name")
+                    .description("Your name.")
+                    .onChanged(name -> PlayStatus.get().name = name)
+                    .onModuleActivated(stringSetting -> stringSetting.set(PlayStatus.get().name))
+                    .build()
+            );
+
+            sgPlayStatus.add(
+                new StringSetting.Builder()
                     .name("server")
                     .description("The server to use for play status.")
                     .onChanged(server -> PlayStatus.get().server = server)
@@ -85,10 +94,10 @@ public class FriendsTab extends Tab {
 
             sgPlayStatus.add(
                 new StringSetting.Builder()
-                    .name("secret")
-                    .description("The secret to use for the server.")
-                    .onChanged(secret -> PlayStatus.get().secret = secret)
-                    .onModuleActivated(stringSetting -> stringSetting.set(PlayStatus.get().secret))
+                    .name("api-key")
+                    .description("The API key to use for the server.")
+                    .onChanged(apiKey -> PlayStatus.get().apiKey = apiKey)
+                    .onModuleActivated(stringSetting -> stringSetting.set(PlayStatus.get().apiKey))
                     .build()
             );
 

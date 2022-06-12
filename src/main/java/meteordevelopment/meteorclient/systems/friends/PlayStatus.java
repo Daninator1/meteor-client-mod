@@ -5,7 +5,6 @@
 
 package meteordevelopment.meteorclient.systems.friends;
 
-import com.mojang.util.UUIDTypeAdapter;
 import meteordevelopment.meteorclient.events.game.GameJoinedEvent;
 import meteordevelopment.meteorclient.events.game.GameLeftEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
@@ -17,21 +16,18 @@ import meteordevelopment.meteorclient.utils.network.Http;
 import meteordevelopment.meteorclient.utils.world.TickRate;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.nbt.NbtCompound;
-import org.apache.commons.lang3.RandomStringUtils;
 
-import java.util.UUID;
-
+import static meteordevelopment.meteorclient.MeteorClient.LOG;
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 public class PlayStatus extends System<PlayStatus> {
 
     public boolean enabled = false;
+    public String name = "";
     public String server = "";
-    public String secret = "";
-
-    private UUID initialId;
-    private int counter;
-    private int delay;
+    public String apiKey = "";
+    private float counter;
+    private int updateIntervalInMinutes;
 
     public PlayStatus() {
         super("play-status");
@@ -39,70 +35,94 @@ public class PlayStatus extends System<PlayStatus> {
 
     @Override
     public void init() {
-        this.initialId = getInitialId();
         this.counter = 0;
-        this.delay = 10;
+        this.updateIntervalInMinutes = 5;
     }
 
     public static PlayStatus get() {
         return Systems.get(PlayStatus.class);
     }
 
-    private UUID getInitialId() {
-        return UUIDTypeAdapter.fromString(mc.getSession().getUuid());
-    }
-
     @Override
     public NbtCompound toTag() {
         NbtCompound tag = new NbtCompound();
         tag.putBoolean("enabled", this.enabled);
+        tag.putString("name", this.name);
         tag.putString("server", this.server);
-        tag.putString("secret", this.secret);
+        tag.putString("apiKey", this.apiKey);
         return tag;
     }
 
     @Override
     public PlayStatus fromTag(NbtCompound tag) {
         this.enabled = tag.getBoolean("enabled");
+        this.name = tag.getString("name");
         this.server = tag.getString("server");
-        this.secret = tag.getString("secret");
+        this.apiKey = tag.getString("apiKey");
         return this;
     }
 
     @EventHandler
-    private static void onGameJoined(GameJoinedEvent event) {
-        // set status
+    private void onGameJoined(GameJoinedEvent event) {
+        if (!this.enabled) return;
+        this.setPlayStatus();
     }
 
     @EventHandler
-    private static void onGameLeft(GameLeftEvent event) {
-        // remove status
+    private void onGameLeft(GameLeftEvent event) {
+        if (!this.enabled) return;
+        this.removePlayStatus();
     }
 
     @EventHandler
     private void onTick(TickEvent.Post event) {
-        if (!this.enabled) return;
+        var tickRate = TickRate.INSTANCE.getTickRate();
+        if (!this.enabled || tickRate == 0.0 || mc.isInSingleplayer()) return;
 
-        var secondsPassed = 1.0 / TickRate.INSTANCE.getTickRate();
+        var secondsPassed = 1.0 / tickRate;
         this.counter += secondsPassed;
 
-        if (this.counter >= this.delay) {
-
-            // set status
-
+        if (this.counter / 60 >= this.updateIntervalInMinutes) {
+            this.setPlayStatus();
             this.counter = 0;
         }
     }
 
     public PlayStatusEntry[] getPlayStatusEntries() {
-        return Http.get(server + "/friendServers").sendJson(PlayStatusEntry[].class);
+        try {
+            return Http
+                .get(server + "/playstatus")
+                .apiKey(this.apiKey)
+                .sendJson(PlayStatusEntry[].class);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+        }
+
+        return null;
     }
 
     private void setPlayStatus() {
+        var entry = new PlayStatusEntry(this.name, mc.getSession().getUsername(), Utils.getWorldName());
 
+        try {
+            Http.post(server + "/playstatus")
+                .apiKey(this.apiKey)
+                .bodyJson(entry)
+                .send();
+            LOG.debug("Sent current play status");
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+        }
     }
 
     private void removePlayStatus() {
-
+        try {
+            Http.delete(server + "/playstatus/" + this.name)
+                .apiKey(this.apiKey)
+                .send();
+            LOG.debug("Removed current play status");
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+        }
     }
 }

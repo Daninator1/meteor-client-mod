@@ -30,7 +30,8 @@ public class Http {
 
     private enum Method {
         GET,
-        POST
+        POST,
+        DELETE
     }
 
     public static class Request {
@@ -49,6 +50,11 @@ public class Http {
         public Request bearer(String token) {
             builder.header("Authorization", "Bearer " + token);
 
+            return this;
+        }
+
+        public Request apiKey(String apiKey) {
+            builder.header("Api-Key", apiKey);
             return this;
         }
 
@@ -125,5 +131,9 @@ public class Http {
 
     public static Request post(String url) {
         return new Request(Method.POST, url);
+    }
+
+    public static Request delete(String url) {
+        return new Request(Method.DELETE, url);
     }
 }

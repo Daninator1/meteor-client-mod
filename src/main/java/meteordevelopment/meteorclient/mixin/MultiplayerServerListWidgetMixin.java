@@ -5,10 +5,9 @@
 
 package meteordevelopment.meteorclient.mixin;
 
-import meteordevelopment.meteorclient.systems.friends.Friends;
 import meteordevelopment.meteorclient.systems.friends.PlayStatus;
 import meteordevelopment.meteorclient.utils.misc.PlayStatusEntry;
-import meteordevelopment.meteorclient.utils.misc.FriendServerEntry;
+import meteordevelopment.meteorclient.utils.misc.PlayStatusServerEntry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerServerListWidget;
@@ -38,13 +37,8 @@ public class MultiplayerServerListWidgetMixin extends AlwaysSelectedEntryListWid
         var playStatusEntries = PlayStatus.get().getPlayStatusEntries();
         if (playStatusEntries == null) return;
 
-        var friends = Friends.get();
-
         for (PlayStatusEntry playStatusEntry : playStatusEntries) {
-            var friend = friends.get(playStatusEntry.friendId);
-            if (friend == null) continue;
-
-            var entry = new FriendServerEntry(this.screen, new LanServerInfo(playStatusEntry.playerName, playStatusEntry.getServerAddress()), friend.name);
+            var entry = new PlayStatusServerEntry(this.screen, new LanServerInfo(playStatusEntry.playerName, playStatusEntry.server), playStatusEntry.name);
             this.addEntry(entry);
         }
     }

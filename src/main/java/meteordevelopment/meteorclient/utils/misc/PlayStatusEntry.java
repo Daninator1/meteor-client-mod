@@ -5,15 +5,15 @@
 
 package meteordevelopment.meteorclient.utils.misc;
 
-import java.util.UUID;
-
 public class PlayStatusEntry {
-    public UUID friendId;
+    public String name;
     public String playerName;
-    public String serverHost;
-    public Integer serverPort;
+    public String server;
 
-    public String getServerAddress() {
-        return this.serverHost + ":" + this.serverPort;
+    public PlayStatusEntry(String name, String playerName, String server) {
+
+        this.name = name;
+        this.playerName = playerName;
+        this.server = server;
     }
 }

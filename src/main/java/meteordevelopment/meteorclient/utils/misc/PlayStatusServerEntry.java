@@ -16,7 +16,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 
 @Environment(value = EnvType.CLIENT)
-public class FriendServerEntry extends MultiplayerServerListWidget.Entry {
+public class PlayStatusServerEntry extends MultiplayerServerListWidget.Entry {
     private static final int field_32386 = 32;
     private final Text titleText;
     private static final Text HIDDEN_ADDRESS_TEXT = Text.translatable("selectServer.hiddenAddress");
@@ -25,7 +25,7 @@ public class FriendServerEntry extends MultiplayerServerListWidget.Entry {
     protected final LanServerInfo server;
     private long time;
 
-    public FriendServerEntry(MultiplayerScreen screen, LanServerInfo server, String title) {
+    public PlayStatusServerEntry(MultiplayerScreen screen, LanServerInfo server, String title) {
         this.screen = screen;
         this.server = server;
         titleText = Text.of(title);

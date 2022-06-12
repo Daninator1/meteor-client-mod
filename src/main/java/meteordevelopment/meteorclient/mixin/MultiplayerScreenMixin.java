@@ -10,7 +10,7 @@ import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.misc.NameProtect;
 import meteordevelopment.meteorclient.systems.proxies.Proxies;
 import meteordevelopment.meteorclient.systems.proxies.Proxy;
-import meteordevelopment.meteorclient.utils.misc.FriendServerEntry;
+import meteordevelopment.meteorclient.utils.misc.PlayStatusServerEntry;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
@@ -85,8 +85,8 @@ public abstract class MultiplayerScreenMixin extends Screen {
     @Inject(method = "connect", at = @At("TAIL"))
     private void onConnect(CallbackInfo info) {
         MultiplayerServerListWidget.Entry entry = this.serverListWidget.getSelectedOrNull();
-        if (entry instanceof FriendServerEntry) {
-            LanServerInfo lanServerInfo = ((FriendServerEntry) entry).getLanServerEntry();
+        if (entry instanceof PlayStatusServerEntry) {
+            LanServerInfo lanServerInfo = ((PlayStatusServerEntry) entry).getLanServerEntry();
             this.connect(new ServerInfo(lanServerInfo.getMotd(), lanServerInfo.getAddressPort(), true));
         }
     }

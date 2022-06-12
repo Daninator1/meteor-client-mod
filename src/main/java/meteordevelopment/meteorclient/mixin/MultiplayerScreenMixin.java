@@ -87,7 +87,7 @@ public abstract class MultiplayerScreenMixin extends Screen {
         MultiplayerServerListWidget.Entry entry = this.serverListWidget.getSelectedOrNull();
         if (entry instanceof PlayStatusServerEntry) {
             LanServerInfo lanServerInfo = ((PlayStatusServerEntry) entry).getLanServerEntry();
-            this.connect(new ServerInfo(lanServerInfo.getMotd(), lanServerInfo.getAddressPort(), true));
+            this.connect(new ServerInfo(lanServerInfo.getMotd(), lanServerInfo.getAddressPort(), false));
         }
     }
 }

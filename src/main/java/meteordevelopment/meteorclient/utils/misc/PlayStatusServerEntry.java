@@ -5,15 +5,22 @@
 
 package meteordevelopment.meteorclient.utils.misc;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import meteordevelopment.meteorclient.systems.accounts.AccountUtils;
+import meteordevelopment.meteorclient.utils.render.ByteTexture;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerServerListWidget;
 import net.minecraft.client.network.LanServerInfo;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+
+import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 @Environment(value = EnvType.CLIENT)
 public class PlayStatusServerEntry extends MultiplayerServerListWidget.Entry {
@@ -30,6 +37,17 @@ public class PlayStatusServerEntry extends MultiplayerServerListWidget.Entry {
         this.server = server;
         titleText = Text.of(title);
         this.client = MinecraftClient.getInstance();
+
+        var defaultTexture = new ByteTexture(8, 8, AccountUtils.loadSteveHeadData(), ByteTexture.Format.RGB, ByteTexture.Filter.Nearest, ByteTexture.Filter.Nearest);
+        mc.getTextureManager().registerTexture(new Identifier(this.server.getMotd().toLowerCase()), defaultTexture);
+
+        new Thread(() -> {
+            var skinUrl = AccountUtils.getSkinUrl(this.server.getMotd());
+            if (skinUrl != null) {
+                var headTexture = new ByteTexture(8, 8, AccountUtils.loadHeadData(skinUrl), ByteTexture.Format.RGB, ByteTexture.Filter.Nearest, ByteTexture.Filter.Nearest);
+                mc.getTextureManager().registerTexture(new Identifier(this.server.getMotd().toLowerCase()), headTexture);
+            }
+        }).start();
     }
 
     @Override
@@ -41,6 +59,15 @@ public class PlayStatusServerEntry extends MultiplayerServerListWidget.Entry {
         } else {
             this.client.textRenderer.draw(matrices, this.server.getAddressPort(), (float) (x + 32 + 3), (float) (y + 12 + 11), 0x303030);
         }
+
+        this.draw(matrices, x, y, new Identifier(this.server.getMotd().toLowerCase()));
+    }
+
+    protected void draw(MatrixStack matrices, int x, int y, Identifier textureId) {
+        RenderSystem.setShaderTexture(0, textureId);
+        RenderSystem.enableBlend();
+        DrawableHelper.drawTexture(matrices, x, y, 0.0f, 0.0f, 32, 32, 32, 32);
+        RenderSystem.disableBlend();
     }
 
     @Override

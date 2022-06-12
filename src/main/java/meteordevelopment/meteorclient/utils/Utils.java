@@ -321,11 +321,8 @@ public class Utils {
 
         // Multiplayer
         if (mc.getCurrentServerEntry() != null) {
-            String name = mc.isConnectedToRealms() ? "realms" : mc.getCurrentServerEntry().address;
-            if (SystemUtils.IS_OS_WINDOWS) {
-                name = name.replace(":", "_");
-            }
-            return name;
+            // Multiplayer
+            return mc.isConnectedToRealms() ? "realms" : mc.getCurrentServerEntry().address;
         }
 
         return "";

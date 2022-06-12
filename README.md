@@ -1,16 +1,14 @@
 
 <p align="center">
-<img src="https://meteorclient.com/icon.png" alt="meteor-client-logo" width="15%"/>
+<img src="src/main/resources/assets/meteor-client/textures/meteor.png" alt="meteor-client-logo" width="20%"/>
 </p>
 
 <h1 align="center">Meteor Client Mod</h1>
 
 <p align="center">A Minecraft Fabric Utility Mod for the latest Minecraft release.</p>
-<p align="center">Modded fork by Daninator1</p>
+<p align="center">Modded fork of <a href="https://github.com/MeteorDevelopment/meteor-client">Meteor Client</a> by Daninator1</p>
 
 <div align="center">
-    <a href="https://discord.gg/bBGQZvd"><img src="https://img.shields.io/discord/689197705683140636?logo=discord" alt="Discord"/></a>
-    <br><br>
     <img src="https://img.shields.io/github/last-commit/Daninator1/meteor-client-mod" alt="GitHub last commit"/>
     <img src="https://img.shields.io/github/commit-activity/w/Daninator1/meteor-client-mod" alt="GitHub commit activity"/>
     <br>
@@ -39,7 +37,7 @@ We will review and help with all reasonable pull requests as long as the guideli
 - If you need help, check out the [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html) for a reference.
 
 ## Bugs and Suggestions
-Bug reports and suggestions should be made in this repo's [issue tracker](https://github.com/MeteorDevelopment/meteor-client/issues) using the templates provided.  
+Bug reports and suggestions should be made in this repo's [issue tracker](https://github.com/Daninator1/meteor-client-mod/issues) using the templates provided.  
 Please provide as much information as you can to best help us understand your issue and give a better chance of it being resolved.
 
 ## Donations

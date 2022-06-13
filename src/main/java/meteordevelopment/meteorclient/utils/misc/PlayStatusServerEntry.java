@@ -75,6 +75,7 @@ public class PlayStatusServerEntry extends MultiplayerServerListWidget.Entry {
         this.screen.select(this);
         if (Util.getMeasuringTimeMs() - this.time < 250L) {
             this.screen.connect();
+            mc.options.lastServer = this.server.getAddressPort();
         }
         this.time = Util.getMeasuringTimeMs();
         return false;

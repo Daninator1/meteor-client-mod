@@ -6,6 +6,14 @@
 package meteordevelopment.meteorclient.systems.accounts;
 
 import com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService;
+import com.mojang.blaze3d.platform.TextureUtil;
+import meteordevelopment.meteorclient.MeteorClient;
+import meteordevelopment.meteorclient.systems.modules.render.EntityOwner;
+import meteordevelopment.meteorclient.utils.network.Http;
+import net.minecraft.util.Identifier;
+import org.lwjgl.stb.STBImage;
+import org.lwjgl.system.MemoryStack;
+import org.spongepowered.include.com.google.gson.Gson;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -13,6 +21,9 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.util.Base64;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
@@ -51,13 +62,14 @@ public class AccountUtils {
         ProfileResponse res = Http.get("https://api.mojang.com/users/profiles/minecraft/" + username).sendJson(ProfileResponse.class);
         if (res == null) return null;
 
-        UuidToProfileResponse res2 = Http.get("https://sessionserver.mojang.com/session/minecraft/profile/" + res.id).sendJson(UuidToProfileResponse.class);
+        UuidToProfileResponse res2 = Http.get("https://sessionserver.mojang.com/session/minecraft/profile/" + res.getPropertyValue("id")).sendJson(UuidToProfileResponse.class);
         if (res2 == null) return null;
 
         String base64Textures = res2.getPropertyValue("textures");
         if (base64Textures == null) return null;
 
-        TexturesJson textures = new Gson().fromJson(new String(Base64.getDecoder().decode(base64Textures)), TexturesJson.class);
+        TexturesJson textures = new com.google.gson.Gson().fromJson(new String(Base64.getDecoder().decode(base64Textures)), TexturesJson.class);
+
         if (textures.textures.SKIN == null) return null;
 
         return textures.textures.SKIN.url;

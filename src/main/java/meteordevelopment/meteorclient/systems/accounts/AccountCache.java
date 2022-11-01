@@ -10,7 +10,6 @@ import meteordevelopment.meteorclient.utils.misc.ISerializable;
 import meteordevelopment.meteorclient.utils.misc.NbtException;
 import meteordevelopment.meteorclient.utils.render.PlayerHeadTexture;
 import meteordevelopment.meteorclient.utils.render.PlayerHeadUtils;
-import meteordevelopment.meteorclient.renderer.Texture;
 import net.minecraft.nbt.NbtCompound;
 
 public class AccountCache implements ISerializable<AccountCache> {
@@ -25,13 +24,6 @@ public class AccountCache implements ISerializable<AccountCache> {
     public void loadHead() {
         if (uuid == null || uuid.isBlank()) return;
         headTexture = PlayerHeadUtils.fetchHead(UUIDTypeAdapter.fromString(uuid));
-    }
-    
-    public boolean loadHead(String url) {
-        var head = AccountUtils.loadHeadData(url);
-        if (head.length == 0) return false;
-        headTexture = new Texture(8, 8, head, Texture.Format.RGB, Texture.Filter.Nearest, Texture.Filter.Nearest);
-        return true;
     }
 
     @Override

@@ -8,6 +8,7 @@ package meteordevelopment.meteorclient.utils.misc;
 import com.mojang.blaze3d.systems.RenderSystem;
 import meteordevelopment.meteorclient.systems.accounts.AccountUtils;
 import meteordevelopment.meteorclient.utils.render.ByteTexture;
+import meteordevelopment.meteorclient.utils.render.PlayerHeadUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;

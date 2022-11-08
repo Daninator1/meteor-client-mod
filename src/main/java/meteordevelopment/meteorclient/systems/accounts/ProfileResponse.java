@@ -6,18 +6,6 @@
 package meteordevelopment.meteorclient.systems.accounts;
 
 public class ProfileResponse {
-    public Property[] properties;
-
-    public String getPropertyValue(String name) {
-        for (Property property : properties) {
-            if (property.name.equals(name)) return property.id;
-        }
-
-        return null;
-    }
-
-    public static class Property {
-        public String name;
-        public String id;
-    }
+    public String name;
+    public String id;
 }

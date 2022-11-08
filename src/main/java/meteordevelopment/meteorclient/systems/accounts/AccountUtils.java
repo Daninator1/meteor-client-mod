@@ -62,7 +62,7 @@ public class AccountUtils {
         ProfileResponse res = Http.get("https://api.mojang.com/users/profiles/minecraft/" + username).sendJson(ProfileResponse.class);
         if (res == null) return null;
 
-        UuidToProfileResponse res2 = Http.get("https://sessionserver.mojang.com/session/minecraft/profile/" + res.getPropertyValue("id")).sendJson(UuidToProfileResponse.class);
+        UuidToProfileResponse res2 = Http.get("https://sessionserver.mojang.com/session/minecraft/profile/" + res.id).sendJson(UuidToProfileResponse.class);
         if (res2 == null) return null;
 
         String base64Textures = res2.getPropertyValue("textures");

@@ -35,7 +35,11 @@ public class AddServerScreenMixin extends Screen {
                 50,
                 20,
                 Text.literal("Use last"),
-                button -> this.addressField.setText(this.client != null ? this.client.options.lastServer : "")
+                button -> {
+                    if (this.addressField != null) {
+                        this.addressField.setText(this.client != null ? this.client.options.lastServer : "");
+                    }
+                }
             )
         );
     }

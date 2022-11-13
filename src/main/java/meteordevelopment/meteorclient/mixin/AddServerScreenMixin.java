@@ -12,15 +12,13 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
+import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(AddServerScreen.class)
 public class AddServerScreenMixin extends Screen {
-
-    @Mutable
-    private TextFieldWidget addressField;
 
     protected AddServerScreenMixin(Text title) {
         super(title);
@@ -35,11 +33,7 @@ public class AddServerScreenMixin extends Screen {
                 50,
                 20,
                 Text.literal("Use last"),
-                button -> {
-                    if (this.addressField != null) {
-                        this.addressField.setText(this.client != null ? this.client.options.lastServer : "");
-                    }
-                }
+                button -> ((AddServerScreenAccessor) this).getAddressField().setText(this.client != null ? this.client.options.lastServer : "")
             )
         );
     }

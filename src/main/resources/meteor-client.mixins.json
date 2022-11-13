@@ -10,6 +10,7 @@
     "AbstractClientPlayerEntityMixin",
     "AbstractFurnaceScreenHandlerMixin",
     "AbstractFurnaceScreenMixin",
+    "AddServerScreenAccessor",
     "AddServerScreenMixin",
     "ArmorFeatureRendererMixin",
     "BackgroundRendererMixin",

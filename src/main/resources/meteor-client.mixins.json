@@ -83,6 +83,7 @@
     "FluidBlockMixin",
     "FluidRendererMixin",
     "FoliageColorsMixin",
+    "GameMenuScreenMixin",
     "GameOptionsMixin",
     "GameRendererMixin",
     "GenericContainerScreenMixin",

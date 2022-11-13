@@ -6,6 +6,7 @@
 package meteordevelopment.meteorclient.mixin;
 
 import meteordevelopment.meteorclient.gui.GuiThemes;
+import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.misc.NameProtect;
 import meteordevelopment.meteorclient.systems.proxies.Proxies;
@@ -52,11 +53,16 @@ public abstract class MultiplayerScreenMixin extends Screen {
         loggedInAs = "Logged in as ";
         loggedInAsLength = textRenderer.getWidth(loggedInAs);
 
-        addDrawableChild(new ButtonWidget(this.width - 75 - 3, 3, 75, 20, Text.literal("Accounts"), button -> {
-            client.setScreen(GuiThemes.get().accountsScreen());
-        }));
+        var additionalSpacing = 0;
 
-        addDrawableChild(new ButtonWidget(this.width - 75 - 3 - 75 - 2, 3, 75, 20, Text.literal("Proxies"), button -> {
+        if (Config.get().accountSwitcher.get()) {
+            addDrawableChild(new ButtonWidget(this.width - 75 - 3, 3, 75, 20, Text.literal("Accounts"), button -> {
+                client.setScreen(GuiThemes.get().accountsScreen());
+            }));
+            additionalSpacing = 75 + 2;
+        }
+
+        addDrawableChild(new ButtonWidget(this.width - 75 - 3 - additionalSpacing, 3, 75, 20, Text.literal("Proxies"), button -> {
             client.setScreen(GuiThemes.get().proxiesScreen());
         }));
     }

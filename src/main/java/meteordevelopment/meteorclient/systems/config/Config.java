@@ -94,6 +94,13 @@ public class Config extends System<Config> {
         .build()
     );
 
+    public final Setting<Boolean> accountSwitcher = sgVisual.add(new BoolSetting.Builder()
+        .name("account-switcher")
+        .description("Show account switcher in multiplayer menu.")
+        .defaultValue(true)
+        .build()
+    );
+
     // Chat
 
     public final Setting<String> prefix = sgChat.add(new StringSetting.Builder()

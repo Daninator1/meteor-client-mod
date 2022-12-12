@@ -60,19 +60,19 @@ public abstract class MultiplayerScreenMixin extends Screen {
                 new ButtonWidget.Builder(Text.literal("Accounts"), button -> {
                     client.setScreen(GuiThemes.get().accountsScreen());
                 })
-                .position(this.width - 75 - 3, 3)
-                .size(75, 20)
-                .build()
-        );
+                    .position(this.width - 75 - 3, 3)
+                    .size(75, 20)
+                    .build()
+            );
             additionalSpacing = 75 + 2;
         }
 
 
         addDrawableChild(
-                new ButtonWidget.Builder(Text.literal("Proxies"), button -> {
-                    client.setScreen(GuiThemes.get().proxiesScreen());
-                })
-                .position(this.width - 75 - 3 - additionalSpacing - 75 - 2, 3)
+            new ButtonWidget.Builder(Text.literal("Proxies"), button -> {
+                client.setScreen(GuiThemes.get().proxiesScreen());
+            })
+                .position(this.width - 75 - 3 - additionalSpacing, 3)
                 .size(75, 20)
                 .build()
         );

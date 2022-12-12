@@ -24,11 +24,10 @@ public class GameMenuScreenMixin extends Screen {
     @Inject(method = "initWidgets", at = @At("TAIL"))
     private void OnInitWidgets(CallbackInfo info) {
         this.addDrawableChild(
-            new ButtonWidget(this.width / 2 - 102,
-                this.height / 4 + 24 + -16 - 24,
-                204,
-                20,
-                Text.translatable("menu.multiplayer"),
-                (button) -> this.client.setScreen(new MultiplayerScreen(this))));
+            new ButtonWidget.Builder(Text.translatable("menu.multiplayer"), button -> this.client.setScreen(new MultiplayerScreen(this)))
+                .position(this.width / 2 - 102, this.height / 4 + 24 + -16 - 24)
+                .size(204, 20)
+                .build()
+        );
     }
 }

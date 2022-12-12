@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.mixin;
 
+import meteordevelopment.meteorclient.gui.GuiThemes;
 import net.minecraft.client.gui.screen.AddServerScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -27,14 +28,10 @@ public class AddServerScreenMixin extends Screen {
     @Inject(method = "init", at = @At("TAIL"))
     private void onInit(CallbackInfo info) {
         this.addDrawableChild(
-            new ButtonWidget(
-                this.width / 2 + 104,
-                106,
-                50,
-                20,
-                Text.literal("Use last"),
-                button -> ((AddServerScreenAccessor) this).getAddressField().setText(this.client != null ? this.client.options.lastServer : "")
-            )
+            new ButtonWidget.Builder(Text.literal("Use last"), button -> ((AddServerScreenAccessor) this).getAddressField().setText(this.client != null ? this.client.options.lastServer : ""))
+                .position(this.width / 2 + 104, 106)
+                .size(50, 20)
+                .build()
         );
     }
 }

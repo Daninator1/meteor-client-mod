@@ -10,6 +10,7 @@ import meteordevelopment.meteorclient.systems.modules.misc.LecternCrash;
 import net.minecraft.client.gui.screen.ingame.BookScreen;
 import net.minecraft.client.gui.screen.ingame.LecternScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
+import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.screen.LecternScreenHandler;
 import net.minecraft.text.Text;
@@ -25,13 +26,11 @@ public abstract class LecternScreenMixin extends BookScreen implements ScreenHan
         LecternCrash lecternCrash = Modules.get().get(LecternCrash.class);
 
         if (lecternCrash.isActive()) {
-            addDrawableChild(new ButtonWidget(
-                4,
-                28,
-                120,
-                20,
-                Text.literal("Crash"),
-                button -> lecternCrash.crash())
+            addDrawableChild(
+                new ButtonWidget.Builder(Text.literal("Crash"), button -> lecternCrash.crash())
+                    .position(4, 28)
+                    .size(120, 20)
+                    .build()
             );
         }
     }

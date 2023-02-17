@@ -36,6 +36,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
 public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen implements ScreenHandlerProvider<T> {
     @Shadow protected Slot focusedSlot;
 
+    @Shadow protected int backgroundWidth;
     @Shadow protected int x;
     @Shadow protected int y;
 
@@ -60,15 +61,15 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
         if (invTweaks.isActive() && invTweaks.showButtons() && invTweaks.canSteal(getScreenHandler())) {
             addDrawableChild(
                 new ButtonWidget.Builder(Text.literal("Steal"), button -> invTweaks.steal(getScreenHandler()))
-                    .position(width / 2 - 41, 3)
-                    .size(40, 20)
+                    .position(x + backgroundWidth - 88, y + 3)
+                    .size(40, 12)
                     .build()
             );
 
             addDrawableChild(
                 new ButtonWidget.Builder(Text.literal("Dump"), button -> invTweaks.dump(getScreenHandler()))
-                    .position(width / 2 + 2, 3)
-                    .size(40, 20)
+                    .position(x + backgroundWidth - 46, y + 3)
+                    .size(40, 12)
                     .build()
             );
         }

@@ -56,6 +56,7 @@ public class DropCommand extends Command {
                     for (int i = 0; i < player.getInventory().size(); i++) {
                         InvUtils.drop().slot(i);
                     }
+                    InvUtils.drop().slotOffhand();
                 })));
 
         // Armor

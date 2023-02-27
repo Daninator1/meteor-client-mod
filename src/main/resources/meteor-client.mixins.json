@@ -142,6 +142,7 @@
     "ResourceReloadLoggerAccessor",
     "ScreenMixin",
     "SectionedEntityCacheAccessor",
+    "ServerEntryMixin",
     "ShapeIndexBufferAccessor",
     "ShulkerBoxBlockMixin",
     "SignBlockEntityRendererMixin",

@@ -8,7 +8,6 @@ package meteordevelopment.meteorclient.utils.misc;
 import com.mojang.blaze3d.systems.RenderSystem;
 import meteordevelopment.meteorclient.systems.accounts.AccountUtils;
 import meteordevelopment.meteorclient.utils.render.ByteTexture;
-import meteordevelopment.meteorclient.utils.render.PlayerHeadUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -25,7 +24,6 @@ import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 @Environment(value = EnvType.CLIENT)
 public class PlayStatusServerEntry extends MultiplayerServerListWidget.Entry {
-    private static final int field_32386 = 32;
     private final Text titleText;
     private static final Text HIDDEN_ADDRESS_TEXT = Text.translatable("selectServer.hiddenAddress");
     private final MultiplayerScreen screen;

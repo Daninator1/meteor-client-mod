@@ -17,10 +17,11 @@ import java.util.List;
 @Mixin(MultiplayerServerListWidget.ServerEntry.class)
 public class ServerEntryMixin {
 
-    @ModifyVariable(method = "render(Lnet/minecraft/client/util/math/MatrixStack;IIIIIIIZF)V", at = @At("HEAD"), ordinal = 0)
-    private int onRender(int index) {
-        return index - GetIndexModifier();
-    }
+    // TODO: fix performance issues
+//    @ModifyVariable(method = "render(Lnet/minecraft/client/util/math/MatrixStack;IIIIIIIZF)V", at = @At("HEAD"), ordinal = 0)
+//    private int onRender(int index) {
+//        return index - GetIndexModifier();
+//    }
 
     @Redirect(method = "keyPressed(III)Z", at = @At(value = "INVOKE", target = "Ljava/util/List;indexOf(Ljava/lang/Object;)I", ordinal = 0))
     private int onKeyPressed(List<MultiplayerServerListWidget.Entry> children, Object object) {

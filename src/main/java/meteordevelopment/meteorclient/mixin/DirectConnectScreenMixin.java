@@ -5,7 +5,7 @@
 
 package meteordevelopment.meteorclient.mixin;
 
-import net.minecraft.client.gui.screen.AddServerScreen;
+import net.minecraft.client.gui.screen.DirectConnectScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
@@ -14,18 +14,18 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(AddServerScreen.class)
-public class AddServerScreenMixin extends Screen {
+@Mixin(DirectConnectScreen.class)
+public class DirectConnectScreenMixin extends Screen {
 
-    protected AddServerScreenMixin(Text title) {
+    protected DirectConnectScreenMixin(Text title) {
         super(title);
     }
 
     @Inject(method = "init", at = @At("TAIL"))
     private void onInit(CallbackInfo info) {
         this.addDrawableChild(
-            new ButtonWidget.Builder(Text.literal("Use last"), button -> ((AddServerScreenAccessor) this).getAddressField().setText(this.client != null ? this.client.options.lastServer : ""))
-                .position(this.width / 2 + 104, 106)
+            new ButtonWidget.Builder(Text.literal("Use last"), button -> ((DirectConnectScreenAccessor) this).getAddressField().setText(this.client != null ? this.client.options.lastServer : ""))
+                .position(this.width / 2 + 104, 116)
                 .size(50, 20)
                 .build()
         );

@@ -67,6 +67,8 @@
     "CustomPayloadC2SPacketAccessor",
     "CustomPayloadS2CPacketMixin",
     "DefaultSkinHelperMixin",
+    "DirectConnectScreenAccessor",
+    "DirectConnectScreenMixin",
     "DisconnectedScreenMixin",
     "EnchantingTableBlockEntityRendererMixin",
     "EndCrystalEntityRendererMixin",

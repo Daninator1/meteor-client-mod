@@ -134,6 +134,7 @@
     "PlayerMoveC2SPacketAccessor",
     "PlayerMoveC2SPacketMixin",
     "PlayerPositionLookS2CPacketAccessor",
+    "PlayerSkinProviderAccessor",
     "PowderSnowBlockMixin",
     "ProjectileEntityAccessor",
     "ProjectileInGroundAccessor",
@@ -157,6 +158,7 @@
     "SplashTextResourceSupplierMixin",
     "StatusEffectInstanceAccessor",
     "StatusEffectInstanceMixin",
+    "StringHelperMixin",
     "SweetBerryBushBlockMixin",
     "TextHandlerAccessor",
     "TextRendererMixin",
@@ -169,7 +171,8 @@
     "WorldBorderMixin",
     "WorldChunkMixin",
     "WorldRendererAccessor",
-    "WorldRendererMixin"
+    "WorldRendererMixin",
+    "YggdrasilMinecraftSessionServiceAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

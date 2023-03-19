@@ -6,8 +6,8 @@
 package meteordevelopment.meteorclient.utils.misc;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import meteordevelopment.meteorclient.systems.accounts.AccountUtils;
 import meteordevelopment.meteorclient.utils.render.ByteTexture;
+import meteordevelopment.meteorclient.utils.render.PlayerHeadUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -37,13 +37,13 @@ public class PlayStatusServerEntry extends MultiplayerServerListWidget.Entry {
         titleText = Text.of(title);
         this.client = MinecraftClient.getInstance();
 
-        var defaultTexture = new ByteTexture(8, 8, AccountUtils.loadSteveHeadData(), ByteTexture.Format.RGB, ByteTexture.Filter.Nearest, ByteTexture.Filter.Nearest);
+        var defaultTexture = new ByteTexture(8, 8, PlayerHeadUtils.loadSteveHeadData(), ByteTexture.Format.RGB, ByteTexture.Filter.Nearest, ByteTexture.Filter.Nearest);
         mc.getTextureManager().registerTexture(new Identifier(this.server.getMotd().toLowerCase()), defaultTexture);
 
         new Thread(() -> {
-            var skinUrl = AccountUtils.getSkinUrl(this.server.getMotd());
+            var skinUrl = PlayerHeadUtils.getSkinUrl(this.server.getMotd());
             if (skinUrl != null) {
-                var headTexture = new ByteTexture(8, 8, AccountUtils.loadHeadData(skinUrl), ByteTexture.Format.RGB, ByteTexture.Filter.Nearest, ByteTexture.Filter.Nearest);
+                var headTexture = new ByteTexture(8, 8, PlayerHeadUtils.loadHeadData(skinUrl), ByteTexture.Format.RGB, ByteTexture.Filter.Nearest, ByteTexture.Filter.Nearest);
                 mc.getTextureManager().registerTexture(new Identifier(this.server.getMotd().toLowerCase()), headTexture);
             }
         }).start();

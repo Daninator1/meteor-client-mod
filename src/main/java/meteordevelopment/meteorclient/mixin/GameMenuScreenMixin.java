@@ -23,7 +23,7 @@ public class GameMenuScreenMixin extends Screen {
         super(title);
     }
 
-    @Inject(method = "initWidgets", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/GridWidget$Adder;add(Lnet/minecraft/client/gui/widget/ClickableWidget;ILnet/minecraft/client/gui/widget/Positioner;)Lnet/minecraft/client/gui/widget/ClickableWidget;", shift = At.Shift.AFTER), locals = LocalCapture.CAPTURE_FAILHARD)
+    @Inject(method = "initWidgets", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/GridWidget$Adder;add(Lnet/minecraft/client/gui/widget/Widget;ILnet/minecraft/client/gui/widget/Positioner;)Lnet/minecraft/client/gui/widget/Widget;", shift = At.Shift.AFTER), locals = LocalCapture.CAPTURE_FAILHARD)
     private void OnInitWidgets(CallbackInfo info, GridWidget gridWidget, GridWidget.Adder adder) {
         adder.add(ButtonWidget.builder(Text.translatable("menu.multiplayer"), button -> this.client.setScreen(new MultiplayerScreen(this))).width(204).build(), 2);
     }

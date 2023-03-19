@@ -47,11 +47,6 @@ public class MultiplayerServerListWidgetMixin extends AlwaysSelectedEntryListWid
         var separatorEntry = new PlayStatusSeparatorEntry();
         this.addEntry(separatorEntry);
     }
-
-    @ModifyArg(method = "moveSelection(Lnet/minecraft/client/gui/widget/EntryListWidget$MoveDirection;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/multiplayer/MultiplayerServerListWidget;moveSelectionIf(Lnet/minecraft/client/gui/widget/EntryListWidget$MoveDirection;Ljava/util/function/Predicate;)Z"), index = 1)
-    private Predicate<MultiplayerServerListWidget.Entry> onMoveSelection(Predicate<MultiplayerServerListWidget.Entry> predicate) {
-        return (entry) -> predicate.test(entry) && !(entry instanceof PlayStatusSeparatorEntry);
-    }
 }
 
 

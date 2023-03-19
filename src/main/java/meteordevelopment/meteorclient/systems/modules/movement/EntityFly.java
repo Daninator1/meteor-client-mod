@@ -79,7 +79,7 @@ public class EntityFly extends Module {
     }
 
     private void Fly(Entity entity, Vec3d velocity) {
-        if (entity.getPrimaryPassenger() != mc.player) return;
+        if (entity.getControllingPassenger() != mc.player) return;
 
         entity.setYaw(mc.player.getYaw());
 

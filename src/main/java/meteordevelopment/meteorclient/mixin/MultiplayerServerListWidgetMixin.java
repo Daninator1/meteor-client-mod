@@ -20,8 +20,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.function.Predicate;
-
 @Mixin(MultiplayerServerListWidget.class)
 public class MultiplayerServerListWidgetMixin extends AlwaysSelectedEntryListWidget<MultiplayerServerListWidget.Entry> {
     @Shadow
@@ -36,7 +34,7 @@ public class MultiplayerServerListWidgetMixin extends AlwaysSelectedEntryListWid
     private void onUpdateEntries(CallbackInfo callbackInfo) {
         if (!PlayStatus.get().enabled) return;
 
-        var playStatusEntries = PlayStatus.get().getPlayStatusEntries();
+        var playStatusEntries = PlayStatus.get().fetchPlayStatusEntries();
         if (playStatusEntries == null || playStatusEntries.length == 0) return;
 
         for (PlayStatusEntry playStatusEntry : playStatusEntries) {

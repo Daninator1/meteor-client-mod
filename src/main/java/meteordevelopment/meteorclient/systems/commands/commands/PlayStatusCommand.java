@@ -8,27 +8,47 @@ package meteordevelopment.meteorclient.systems.commands.commands;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import meteordevelopment.meteorclient.systems.commands.Command;
 import meteordevelopment.meteorclient.systems.friends.PlayStatus;
-import meteordevelopment.meteorclient.utils.misc.PlayStatusEntry;
+import meteordevelopment.meteorclient.utils.Utils;
 import net.minecraft.command.CommandSource;
+
+import java.util.Arrays;
 
 import static com.mojang.brigadier.Command.SINGLE_SUCCESS;
 
 public class PlayStatusCommand extends Command {
     public PlayStatusCommand() {
-        super("ps", "Lets you show the play status of your friends.");
+        super("play-status", "Lets you show the play status of your friends on this server.", "ps");
     }
 
     @Override
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
         builder.executes(context -> {
-            if (!PlayStatus.get().enabled) return 0;
-
-            var playStatusEntries = PlayStatus.get().getPlayStatusEntries();
-            if (playStatusEntries == null || playStatusEntries.length == 0) return 0;
-
-            for (PlayStatusEntry playStatusEntry : playStatusEntries) {
-                info("%s: %s, %s, %s", playStatusEntry.name, playStatusEntry.posX, playStatusEntry.posY, playStatusEntry.posZ);
+            if (!PlayStatus.get().enabled) {
+                error("Play status is disabled.");
+                return 0;
             }
+
+            var playStatusEntries = PlayStatus.get().fetchPlayStatusEntries();
+            if (playStatusEntries == null || playStatusEntries.length == 0) {
+                return 0;
+            }
+
+            var filteredEntries = Arrays.stream(playStatusEntries).filter(playStatusEntry ->
+                !playStatusEntry.playerName.equals(mc.player.getName().getString()) &&
+                    playStatusEntry.server.equals(Utils.getWorldName())).toList();
+
+            if (filteredEntries.size() == 0) {
+                error("No friends currently playing on this server.");
+                return 0;
+            }
+
+            filteredEntries.forEach(playStatusEntry ->
+                info("%s: %s, %s, %s (%s)",
+                    playStatusEntry.name,
+                    playStatusEntry.position.x,
+                    playStatusEntry.position.y,
+                    playStatusEntry.position.z,
+                    playStatusEntry.dimension));
 
             return SINGLE_SUCCESS;
         });

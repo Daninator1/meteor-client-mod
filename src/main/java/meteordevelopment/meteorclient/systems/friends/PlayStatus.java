@@ -12,6 +12,7 @@ import meteordevelopment.meteorclient.systems.System;
 import meteordevelopment.meteorclient.systems.Systems;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.PlayStatusEntry;
+import meteordevelopment.meteorclient.utils.misc.PlayStatusPosition;
 import meteordevelopment.meteorclient.utils.network.Http;
 import meteordevelopment.meteorclient.utils.world.TickRate;
 import meteordevelopment.orbit.EventHandler;
@@ -26,8 +27,9 @@ public class PlayStatus extends System<PlayStatus> {
     public String name = "";
     public String server = "";
     public String apiKey = "";
+    public PlayStatusEntry[] playStatusEntries;
     private float counter;
-    private int updateIntervalInMinutes;
+    private int updateIntervalInSeconds;
 
     public PlayStatus() {
         super("play-status");
@@ -36,7 +38,7 @@ public class PlayStatus extends System<PlayStatus> {
     @Override
     public void init() {
         this.counter = 0;
-        this.updateIntervalInMinutes = 1;
+        this.updateIntervalInSeconds = 10;
     }
 
     public static PlayStatus get() {
@@ -82,18 +84,21 @@ public class PlayStatus extends System<PlayStatus> {
         var secondsPassed = 1.0 / tickRate;
         this.counter += secondsPassed;
 
-        if (this.counter / 60 >= this.updateIntervalInMinutes) {
+        if (this.counter >= this.updateIntervalInSeconds) {
             this.setPlayStatus();
+            this.fetchPlayStatusEntries();
             this.counter = 0;
         }
     }
 
-    public PlayStatusEntry[] getPlayStatusEntries() {
+    // TODO: check if filtering should be done here somewhere
+    public PlayStatusEntry[] fetchPlayStatusEntries() {
         try {
-            return Http
+            this.playStatusEntries = Http
                 .get(server + "/playstatus")
                 .apiKey(this.apiKey)
                 .sendJson(PlayStatusEntry[].class);
+            return this.playStatusEntries;
         } catch (Exception e) {
             LOG.error(e.getMessage());
         }
@@ -102,7 +107,13 @@ public class PlayStatus extends System<PlayStatus> {
     }
 
     private void setPlayStatus() {
-        var entry = new PlayStatusEntry(this.name, mc.getSession().getUsername(), Utils.getWorldName(), mc.player.getX(), mc.player.getY(), mc.player.getZ());
+        var entry = new PlayStatusEntry(
+            this.name,
+            mc.getSession().getUsername(),
+            Utils.getWorldName(),
+            new PlayStatusPosition(mc.player.getX(), mc.player.getY(), mc.player.getZ()),
+            mc.world.getDimensionKey().getValue().toString()
+        );
 
         try {
             Http.post(server + "/playstatus")

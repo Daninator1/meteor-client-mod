@@ -55,7 +55,7 @@ public class ServerEntryMixin {
     private int GetIndexModifier() {
         if (!PlayStatus.get().enabled) return 0;
 
-        var playStatusEntries = PlayStatus.get().getPlayStatusEntries();
+        var playStatusEntries = PlayStatus.get().fetchPlayStatusEntries();
         if (playStatusEntries == null || playStatusEntries.length == 0) return 0;
         return playStatusEntries.length + 1;
     }

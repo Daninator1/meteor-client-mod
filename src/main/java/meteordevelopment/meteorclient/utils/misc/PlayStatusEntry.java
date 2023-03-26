@@ -5,21 +5,22 @@
 
 package meteordevelopment.meteorclient.utils.misc;
 
+import net.minecraft.world.dimension.DimensionTypes;
+import org.joml.Vector3d;
+
 public class PlayStatusEntry {
     public String name;
     public String playerName;
     public String server;
-    public double posX;
-    public double posY;
-    public double posZ;
+    public String dimension;
+    public PlayStatusPosition position;
 
-    public PlayStatusEntry(String name, String playerName, String server, double posX, double posY, double posZ) {
+    public PlayStatusEntry(String name, String playerName, String server, PlayStatusPosition position, String dimension) {
 
         this.name = name;
         this.playerName = playerName;
         this.server = server;
-        this.posX = posX;
-        this.posY = posY;
-        this.posZ = posZ;
+        this.position = position;
+        this.dimension = dimension;
     }
 }

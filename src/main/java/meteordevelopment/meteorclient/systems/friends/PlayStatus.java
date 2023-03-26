@@ -36,7 +36,7 @@ public class PlayStatus extends System<PlayStatus> {
     @Override
     public void init() {
         this.counter = 0;
-        this.updateIntervalInMinutes = 5;
+        this.updateIntervalInMinutes = 1;
     }
 
     public static PlayStatus get() {
@@ -102,7 +102,7 @@ public class PlayStatus extends System<PlayStatus> {
     }
 
     private void setPlayStatus() {
-        var entry = new PlayStatusEntry(this.name, mc.getSession().getUsername(), Utils.getWorldName());
+        var entry = new PlayStatusEntry(this.name, mc.getSession().getUsername(), Utils.getWorldName(), mc.player.getX(), mc.player.getY(), mc.player.getZ());
 
         try {
             Http.post(server + "/playstatus")

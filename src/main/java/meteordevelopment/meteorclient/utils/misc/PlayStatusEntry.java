@@ -9,11 +9,17 @@ public class PlayStatusEntry {
     public String name;
     public String playerName;
     public String server;
+    public double posX;
+    public double posY;
+    public double posZ;
 
-    public PlayStatusEntry(String name, String playerName, String server) {
+    public PlayStatusEntry(String name, String playerName, String server, double posX, double posY, double posZ) {
 
         this.name = name;
         this.playerName = playerName;
         this.server = server;
+        this.posX = posX;
+        this.posY = posY;
+        this.posZ = posZ;
     }
 }

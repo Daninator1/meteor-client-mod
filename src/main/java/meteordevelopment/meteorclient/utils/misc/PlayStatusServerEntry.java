@@ -5,17 +5,15 @@
 
 package meteordevelopment.meteorclient.utils.misc;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import meteordevelopment.meteorclient.utils.render.ByteTexture;
 import meteordevelopment.meteorclient.utils.render.PlayerHeadUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerServerListWidget;
 import net.minecraft.client.network.LanServerInfo;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -24,8 +22,8 @@ import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 @Environment(value = EnvType.CLIENT)
 public class PlayStatusServerEntry extends MultiplayerServerListWidget.Entry {
-    private final Text titleText;
-    private static final Text HIDDEN_ADDRESS_TEXT = Text.translatable("selectServer.hiddenAddress");
+    private final String title;
+    private static final String HIDDEN_ADDRESS_TEXT = Text.translatable("selectServer.hiddenAddress").getString();
     private final MultiplayerScreen screen;
     protected final MinecraftClient client;
     protected final LanServerInfo server;
@@ -34,7 +32,7 @@ public class PlayStatusServerEntry extends MultiplayerServerListWidget.Entry {
     public PlayStatusServerEntry(MultiplayerScreen screen, LanServerInfo server, String title) {
         this.screen = screen;
         this.server = server;
-        titleText = Text.of(title);
+        this.title = title;
         this.client = MinecraftClient.getInstance();
 
         var defaultTexture = new ByteTexture(8, 8, PlayerHeadUtils.loadSteveHeadData(), ByteTexture.Format.RGB, ByteTexture.Filter.Nearest, ByteTexture.Filter.Nearest);
@@ -50,23 +48,20 @@ public class PlayStatusServerEntry extends MultiplayerServerListWidget.Entry {
     }
 
     @Override
-    public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-        this.client.textRenderer.draw(matrices, titleText, (float) (x + 32 + 3), (float) (y + 1), 0xFFFFFF);
-        this.client.textRenderer.draw(matrices, "Playing as " + this.server.getMotd(), (float) (x + 32 + 3), (float) (y + 12), 0x808080);
+    public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+        context.drawText(this.client.textRenderer, this.title, x + 32 + 3, y + 1, 0xFFFFFF, false);
+        context.drawText(this.client.textRenderer, "Playing as " + this.server.getMotd(), x + 32 + 3, y + 12, 0x808080, false);
         if (this.client.options.hideServerAddress) {
-            this.client.textRenderer.draw(matrices, HIDDEN_ADDRESS_TEXT, (float) (x + 32 + 3), (float) (y + 12 + 11), 0x303030);
+            context.drawText(this.client.textRenderer, HIDDEN_ADDRESS_TEXT, x + 32 + 3, y + 12 + 11, 0x303030, false);
         } else {
-            this.client.textRenderer.draw(matrices, this.server.getAddressPort(), (float) (x + 32 + 3), (float) (y + 12 + 11), 0x303030);
+            context.drawText(this.client.textRenderer, this.server.getAddressPort(), x + 32 + 3, y + 12 + 11, 0x303030, false);
         }
 
-        this.draw(matrices, x, y, new Identifier(this.server.getMotd().toLowerCase()));
+        this.draw(context, x, y, new Identifier(this.server.getMotd().toLowerCase()));
     }
 
-    protected void draw(MatrixStack matrices, int x, int y, Identifier textureId) {
-        RenderSystem.setShaderTexture(0, textureId);
-        RenderSystem.enableBlend();
-        DrawableHelper.drawTexture(matrices, x, y, 0.0f, 0.0f, 32, 32, 32, 32);
-        RenderSystem.disableBlend();
+    protected void draw(DrawContext context, int x, int y, Identifier textureId) {
+        context.drawTexture(textureId, x, y, 0.0f, 0.0f, 32, 32, 32, 32);
     }
 
     @Override
@@ -86,6 +81,6 @@ public class PlayStatusServerEntry extends MultiplayerServerListWidget.Entry {
 
     @Override
     public Text getNarration() {
-        return Text.translatable("narrator.select", Text.literal("").append(titleText).append(" ").append(this.server.getMotd()));
+        return Text.translatable("narrator.select", Text.literal("").append(title).append(" ").append(this.server.getMotd()));
     }
 }

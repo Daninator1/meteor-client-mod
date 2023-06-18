@@ -40,7 +40,7 @@ import java.util.function.Predicate;
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 @Mixin(MultiplayerScreen.class)
-public class MultiplayerScreenMixin extends Screen {
+public abstract class MultiplayerScreenMixin extends Screen {
     @Shadow
     protected MultiplayerServerListWidget serverListWidget;
 

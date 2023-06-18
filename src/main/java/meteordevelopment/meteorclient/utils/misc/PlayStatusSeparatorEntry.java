@@ -8,9 +8,8 @@ package meteordevelopment.meteorclient.utils.misc;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerServerListWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 
@@ -24,13 +23,13 @@ public class PlayStatusSeparatorEntry extends MultiplayerServerListWidget.Entry 
     }
 
     @Override
-    public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+    public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
         Objects.requireNonNull(this.client.textRenderer);
         var lineWidth = entryWidth - 10;
         var posX = (this.client.currentScreen.width / 2 - lineWidth / 2);
         var posY = y + entryHeight / 2;
 
-        DrawableHelper.fill(matrices, posX, posY, posX + lineWidth, posY + 1, -1601138544);
+        context.fill(posX, posY, posX + lineWidth, posY + 1, -1601138544);
     }
 
     public Text getNarration() {

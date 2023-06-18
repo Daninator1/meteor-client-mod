@@ -27,7 +27,7 @@ public class ServerEntryMixin {
         this.indexModifier = GetIndexModifier();
     }
 
-    @ModifyVariable(method = "render(Lnet/minecraft/client/util/math/MatrixStack;IIIIIIIZF)V", at = @At("HEAD"), ordinal = 0)
+    @ModifyVariable(method = "render(Lnet/minecraft/client/gui/DrawContext;IIIIIIIZF)V", at = @At("HEAD"), ordinal = 0)
     private int onRender(int index) {
         return index - this.indexModifier;
     }

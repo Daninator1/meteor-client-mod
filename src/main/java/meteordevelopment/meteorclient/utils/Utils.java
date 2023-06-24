@@ -342,6 +342,12 @@ public class Utils {
         return "";
     }
 
+    public static boolean isOnlineModeServer() {
+        if (mc.isInSingleplayer()) return false;
+        if (mc.getCurrentServerEntry() == null) return false;
+        return mc.getCurrentServerEntry().online;
+    }
+
     public static String nameToTitle(String name) {
         return Arrays.stream(name.split("-")).map(StringUtils::capitalize).collect(Collectors.joining(" "));
     }

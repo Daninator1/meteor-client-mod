@@ -125,7 +125,7 @@ public class MeteorStarscript {
             .set("health", () -> Value.number(mc.player != null ? mc.player.getHealth() : 0))
             .set("absorption", () -> Value.number(mc.player != null ? mc.player.getAbsorptionAmount() : 0))
             .set("hunger", () -> Value.number(mc.player != null ? mc.player.getHungerManager().getFoodLevel() : 0))
-            
+
             .set("speed", () -> Value.number(Utils.getPlayerSpeed().horizontalLength()))
             .set("speed_all", new ValueMap()
                 .set("_toString", () -> Value.string(mc.player != null ? Utils.getPlayerSpeed().toString() : ""))
@@ -188,6 +188,7 @@ public class MeteorStarscript {
             .set("time", () -> Value.string(Utils.getWorldTime()))
             .set("player_count", () -> Value.number(mc.getNetworkHandler() != null ? mc.getNetworkHandler().getPlayerList().size() : 0))
             .set("difficulty", () -> Value.string(mc.world != null ? mc.world.getDifficulty().getName() : ""))
+            .set("online_mode", () -> Value.bool(Utils.isOnlineModeServer()))
         );
     }
 

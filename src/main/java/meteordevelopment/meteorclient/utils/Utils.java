@@ -343,9 +343,9 @@ public class Utils {
     }
 
     public static boolean isOnlineModeServer() {
-        if (mc.isInSingleplayer()) return false;
-        if (mc.getCurrentServerEntry() == null) return false;
-        return mc.getCurrentServerEntry().online;
+        var networkHandler = mc.getNetworkHandler();
+        if (networkHandler == null) return false;
+        return networkHandler.getConnection().isEncrypted();
     }
 
     public static String nameToTitle(String name) {

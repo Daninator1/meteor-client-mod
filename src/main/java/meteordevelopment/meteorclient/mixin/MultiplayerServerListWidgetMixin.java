@@ -26,8 +26,8 @@ public class MultiplayerServerListWidgetMixin extends AlwaysSelectedEntryListWid
     @Final
     private MultiplayerScreen screen;
 
-    public MultiplayerServerListWidgetMixin(MinecraftClient minecraftClient, int i, int j, int k, int l, int m) {
-        super(minecraftClient, i, j, k, l, m);
+    public MultiplayerServerListWidgetMixin(MinecraftClient minecraftClient, int i, int j, int k, int l) {
+        super(minecraftClient, i, j, k, l);
     }
 
     @Inject(method = "updateEntries", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screen/multiplayer/MultiplayerServerListWidget;servers:Ljava/util/List;"))

@@ -5,7 +5,7 @@
 
 package meteordevelopment.meteorclient.mixin;
 
-import net.minecraft.client.gui.screen.DirectConnectScreen;
+import net.minecraft.client.gui.screen.multiplayer.DirectConnectScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;

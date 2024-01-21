@@ -2,7 +2,7 @@ package meteordevelopment.meteorclient.utils.render;
 
 import com.google.gson.Gson;
 import com.mojang.blaze3d.platform.TextureUtil;
-import com.mojang.util.UUIDTypeAdapter;
+import com.mojang.util.UndashedUuid;
 import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.systems.accounts.ProfileResponse;
 import meteordevelopment.meteorclient.systems.accounts.TexturesJson;
@@ -45,7 +45,7 @@ public class PlayerHeadUtils {
     public static String getSkinUrl(String username) {
         ProfileResponse res = Http.get("https://api.mojang.com/users/profiles/minecraft/" + username).sendJson(ProfileResponse.class);
         if (res == null) return null;
-        return getSkinUrlInternal(UUIDTypeAdapter.fromString(res.id));
+        return getSkinUrlInternal(UndashedUuid.fromString(res.id));
     }
 
     public static String getSkinUrlInternal(UUID id) {

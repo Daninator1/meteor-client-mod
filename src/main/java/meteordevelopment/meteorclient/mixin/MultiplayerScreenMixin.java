@@ -112,18 +112,18 @@ public abstract class MultiplayerScreenMixin extends Screen {
             context.drawTextWithShadow(mc.textRenderer, right, x + textRenderer.getWidth(left), y, textColor2);
     }
 
-    @Inject(method = "connect", at = @At("TAIL"))
+    @Inject(method = "connect()V", at = @At("TAIL"))
     private void onConnect(CallbackInfo info) {
         MultiplayerServerListWidget.Entry entry = this.serverListWidget.getSelectedOrNull();
         if (entry instanceof PlayStatusServerEntry) {
             LanServerInfo lanServerInfo = ((PlayStatusServerEntry) entry).getLanServerEntry();
-            this.connect(new ServerInfo(lanServerInfo.getMotd(), lanServerInfo.getAddressPort(), false));
+            this.connect(new ServerInfo(lanServerInfo.getMotd(), lanServerInfo.getAddressPort(), ServerInfo.ServerType.OTHER));
         }
     }
 
     @Inject(method = "updateButtonActivationStates()V", at = @At("RETURN"), locals = LocalCapture.CAPTURE_FAILHARD)
     private void onUpdateButtonActivationStates(CallbackInfo info, MultiplayerServerListWidget.Entry entry) {
-        if (entry != null && (entry instanceof PlayStatusSeparatorEntry)) {
+        if (entry instanceof PlayStatusSeparatorEntry) {
             this.buttonJoin.active = false;
         }
     }

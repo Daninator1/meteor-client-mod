@@ -6,6 +6,8 @@
 package meteordevelopment.meteorclient.gui.tabs;
 
 import meteordevelopment.meteorclient.gui.tabs.builtin.*;
+import meteordevelopment.meteorclient.pathing.BaritoneUtils;
+import meteordevelopment.meteorclient.pathing.PathManagers;
 import meteordevelopment.meteorclient.utils.PreInit;
 
 import java.util.ArrayList;
@@ -14,7 +16,7 @@ import java.util.List;
 public class Tabs {
     private static final List<Tab> tabs = new ArrayList<>();
 
-    @PreInit
+    @PreInit(dependencies = PathManagers.class)
     public static void init() {
         add(new ModulesTab());
         add(new ConfigTab());
@@ -24,7 +26,10 @@ public class Tabs {
         add(new PlayStatusTab());
         add(new MacrosTab());
         add(new ProfilesTab());
-        add(new BaritoneTab());
+
+        if (PathManagers.get().getSettings().get().sizeGroups() > 0) {
+            add(new PathManagerTab());
+        }
     }
 
     public static void add(Tab tab) {

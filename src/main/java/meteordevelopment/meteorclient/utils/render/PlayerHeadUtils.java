@@ -1,5 +1,6 @@
 package meteordevelopment.meteorclient.utils.render;
 
+import com.google.gson.Gson;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.util.UUIDTypeAdapter;
 import meteordevelopment.meteorclient.MeteorClient;
@@ -38,25 +39,23 @@ public class PlayerHeadUtils {
     }
 
     public static String getSkinUrl(UUID id) {
-        var uuidString = UUIDTypeAdapter.fromUUID(id);
-        return getSkinUrlInternal(uuidString);
+        return getSkinUrlInternal(id);
     }
 
     public static String getSkinUrl(String username) {
         ProfileResponse res = Http.get("https://api.mojang.com/users/profiles/minecraft/" + username).sendJson(ProfileResponse.class);
         if (res == null) return null;
-        return getSkinUrlInternal(res.id);
+        return getSkinUrlInternal(UUIDTypeAdapter.fromString(res.id));
     }
 
-    private static String getSkinUrlInternal(String uuidString) {
-        UuidToProfileResponse res2 = Http.get("https://sessionserver.mojang.com/session/minecraft/profile/" + uuidString).sendJson(UuidToProfileResponse.class);
+    public static String getSkinUrlInternal(UUID id) {
+        UuidToProfileResponse res2 = Http.get("https://sessionserver.mojang.com/session/minecraft/profile/" + id).sendJson(UuidToProfileResponse.class);
         if (res2 == null) return null;
 
         String base64Textures = res2.getPropertyValue("textures");
         if (base64Textures == null) return null;
 
-        TexturesJson textures = new com.google.gson.Gson().fromJson(new String(Base64.getDecoder().decode(base64Textures)), TexturesJson.class);
-
+        TexturesJson textures = new Gson().fromJson(new String(Base64.getDecoder().decode(base64Textures)), TexturesJson.class);
         if (textures.textures.SKIN == null) return null;
 
         return textures.textures.SKIN.url;

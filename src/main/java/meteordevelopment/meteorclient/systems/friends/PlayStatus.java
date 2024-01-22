@@ -109,10 +109,7 @@ public class PlayStatus extends System<PlayStatus> {
 
             if (response == null) return new PlayStatusEntry[0];
 
-            return Arrays.stream(response)
-                .filter(entry -> !entry.playerName.equals(mc.player != null ? mc.player.getName().getString() : null)
-                    && entry.server.equals(Utils.getWorldName()))
-                .toArray(PlayStatusEntry[]::new);
+            return response;
         } catch (Exception e) {
             LOG.error(e.getMessage());
         }

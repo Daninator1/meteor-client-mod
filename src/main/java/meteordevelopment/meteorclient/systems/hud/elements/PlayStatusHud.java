@@ -8,6 +8,7 @@ package meteordevelopment.meteorclient.systems.hud.elements;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.friends.PlayStatus;
 import meteordevelopment.meteorclient.systems.hud.*;
+import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.PlayStatusEntry;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
@@ -120,8 +121,11 @@ public class PlayStatusHud extends HudElement {
         }
 
         for (PlayStatusEntry playStatusEntry : PlayStatus.get().playStatusEntries) {
+            if (playStatusEntry.playerName.equals(mc.player != null ? mc.player.getName().getString() : null)) continue;
+            if (!playStatusEntry.server.equals(Utils.getWorldName())) continue;
+
             String playerText = String.format("%s (%s)", playStatusEntry.playerName, playStatusEntry.name);
-            String positionText = String.format("%s, %s, %s (%s)",
+            String positionText = String.format("%.0f, %.0f, %.0f (%s)",
                 playStatusEntry.position.x,
                 playStatusEntry.position.y,
                 playStatusEntry.position.z,
@@ -149,13 +153,16 @@ public class PlayStatusHud extends HudElement {
         double spaceWidth = renderer.textWidth(" ", shadow.get(), getScale());
 
         for (PlayStatusEntry playStatusEntry : PlayStatus.get().playStatusEntries) {
+            if (playStatusEntry.playerName.equals(mc.player != null ? mc.player.getName().getString() : null)) continue;
+            if (!playStatusEntry.server.equals(Utils.getWorldName())) continue;
+
             String playerText = String.format("%s (%s)", playStatusEntry.playerName, playStatusEntry.name);
             Color color = primaryColor.get();
 
             double width = renderer.textWidth(playerText, shadow.get(), getScale());
             width += spaceWidth;
 
-            String positionText = String.format("%s, %s, %s (%s)",
+            String positionText = String.format("%.0f, %.0f, %.0f (%s)",
                 playStatusEntry.position.x,
                 playStatusEntry.position.y,
                 playStatusEntry.position.z,

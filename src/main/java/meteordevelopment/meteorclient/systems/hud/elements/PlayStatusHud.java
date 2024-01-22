@@ -8,7 +8,6 @@ package meteordevelopment.meteorclient.systems.hud.elements;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.friends.PlayStatus;
 import meteordevelopment.meteorclient.systems.hud.*;
-import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.PlayStatusEntry;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;

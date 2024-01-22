@@ -8,13 +8,11 @@ package meteordevelopment.meteorclient.commands.commands;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import meteordevelopment.meteorclient.commands.Command;
 import meteordevelopment.meteorclient.systems.friends.PlayStatus;
-import meteordevelopment.meteorclient.utils.Utils;
 import net.minecraft.command.CommandSource;
 
 import java.util.Arrays;
 
 import static com.mojang.brigadier.Command.SINGLE_SUCCESS;
-import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 public class PlayStatusCommand extends Command {
     public PlayStatusCommand() {
@@ -30,20 +28,13 @@ public class PlayStatusCommand extends Command {
             }
 
             var playStatusEntries = PlayStatus.get().fetchPlayStatusEntries();
-            if (playStatusEntries == null || playStatusEntries.length == 0) {
-                return 0;
-            }
 
-            var filteredEntries = Arrays.stream(playStatusEntries).filter(playStatusEntry ->
-                !playStatusEntry.playerName.equals(mc.player.getName().getString()) &&
-                    playStatusEntry.server.equals(Utils.getWorldName())).toList();
-
-            if (filteredEntries.size() == 0) {
+            if (playStatusEntries.length == 0) {
                 error("No friends currently playing on this server.");
                 return 0;
             }
 
-            filteredEntries.forEach(playStatusEntry ->
+            Arrays.stream(playStatusEntries).forEach(playStatusEntry ->
                 info("%s: %s, %s, %s (%s)",
                     playStatusEntry.name,
                     playStatusEntry.position.x,

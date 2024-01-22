@@ -121,9 +121,6 @@ public class PlayStatusHud extends HudElement {
         }
 
         for (PlayStatusEntry playStatusEntry : PlayStatus.get().playStatusEntries) {
-            if (playStatusEntry.playerName.equals(mc.player.getName().getString())) continue;
-            if (!playStatusEntry.server.equals(Utils.getWorldName())) continue;
-
             String playerText = String.format("%s (%s)", playStatusEntry.playerName, playStatusEntry.name);
             String positionText = String.format("%s, %s, %s (%s)",
                 playStatusEntry.position.x,
@@ -153,9 +150,6 @@ public class PlayStatusHud extends HudElement {
         double spaceWidth = renderer.textWidth(" ", shadow.get(), getScale());
 
         for (PlayStatusEntry playStatusEntry : PlayStatus.get().playStatusEntries) {
-            if (playStatusEntry.playerName.equals(mc.player.getName().getString())) continue;
-            if (!playStatusEntry.server.equals(Utils.getWorldName())) continue;
-
             String playerText = String.format("%s (%s)", playStatusEntry.playerName, playStatusEntry.name);
             Color color = primaryColor.get();
 

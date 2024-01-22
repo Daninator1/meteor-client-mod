@@ -14,9 +14,12 @@ import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.PlayStatusEntry;
 import meteordevelopment.meteorclient.utils.misc.PlayStatusPosition;
 import meteordevelopment.meteorclient.utils.network.Http;
+import meteordevelopment.meteorclient.utils.network.MeteorExecutor;
 import meteordevelopment.meteorclient.utils.world.TickRate;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.nbt.NbtCompound;
+
+import java.util.Arrays;
 
 import static meteordevelopment.meteorclient.MeteorClient.LOG;
 import static meteordevelopment.meteorclient.MeteorClient.mc;
@@ -39,6 +42,7 @@ public class PlayStatus extends System<PlayStatus> {
     public void init() {
         this.counter = 0;
         this.updateIntervalInSeconds = 10;
+        this.playStatusEntries = new PlayStatusEntry[0];
     }
 
     public static PlayStatus get() {
@@ -67,7 +71,7 @@ public class PlayStatus extends System<PlayStatus> {
     @EventHandler
     private void onGameJoined(GameJoinedEvent event) {
         if (!this.enabled) return;
-        this.setPlayStatus();
+        this.sendOwnPlayStatus();
     }
 
     @EventHandler
@@ -79,41 +83,54 @@ public class PlayStatus extends System<PlayStatus> {
     @EventHandler
     private void onTick(TickEvent.Post event) {
         var tickRate = TickRate.INSTANCE.getTickRate();
-        if (!this.enabled || tickRate == 0.0 || mc.isInSingleplayer()) return;
+        if (!this.enabled || tickRate == 0.0) return;
 
-        var secondsPassed = 1.0 / tickRate;
+        var secondsPassed = 1.0f / tickRate;
         this.counter += secondsPassed;
 
         if (this.counter >= this.updateIntervalInSeconds) {
-            this.setPlayStatus();
-            this.fetchPlayStatusEntries();
             this.counter = 0;
+            MeteorExecutor.execute(() -> {
+                this.sendOwnPlayStatus();
+                var entries = this.fetchPlayStatusEntries();
+                synchronized (this) {
+                    this.playStatusEntries = entries;
+                }
+            });
         }
     }
 
-    // TODO: check if filtering should be done here somewhere
     public PlayStatusEntry[] fetchPlayStatusEntries() {
         try {
-            this.playStatusEntries = Http
+            PlayStatusEntry[] response = Http
                 .get(server + "/playstatus")
                 .apiKey(this.apiKey)
                 .sendJson(PlayStatusEntry[].class);
-            return this.playStatusEntries;
+
+            if (response == null) return new PlayStatusEntry[0];
+
+            return Arrays.stream(response)
+                .filter(entry -> !entry.playerName.equals(mc.player != null ? mc.player.getName().getString() : null)
+                    && entry.server.equals(Utils.getWorldName()))
+                .toArray(PlayStatusEntry[]::new);
         } catch (Exception e) {
             LOG.error(e.getMessage());
         }
 
-        return null;
+        return new PlayStatusEntry[0];
     }
 
-    private void setPlayStatus() {
-        var entry = new PlayStatusEntry(
-            this.name,
-            mc.getSession().getUsername(),
-            Utils.getWorldName(),
-            new PlayStatusPosition(mc.player.getX(), mc.player.getY(), mc.player.getZ()),
-            mc.world.getDimensionKey().getValue().toString()
-        );
+    private void sendOwnPlayStatus() {
+        PlayStatusEntry entry = null;
+        if (mc.player != null && mc.world != null) {
+            entry = new PlayStatusEntry(
+                this.name,
+                mc.getSession().getUsername(),
+                Utils.getWorldName(),
+                new PlayStatusPosition(mc.player.getX(), mc.player.getY(), mc.player.getZ()),
+                mc.world.getDimensionKey().getValue().toString()
+            );
+        }
 
         try {
             Http.post(server + "/playstatus")

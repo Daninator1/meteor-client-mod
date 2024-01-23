@@ -35,7 +35,7 @@ public class PlayStatusCommand extends Command {
             }
 
             Arrays.stream(playStatusEntries).forEach(playStatusEntry ->
-                info("%.0f, %.0f, %.0f (%s)",
+                info("%s: %.0f, %.0f, %.0f (%s)",
                     playStatusEntry.name,
                     playStatusEntry.position.x,
                     playStatusEntry.position.y,

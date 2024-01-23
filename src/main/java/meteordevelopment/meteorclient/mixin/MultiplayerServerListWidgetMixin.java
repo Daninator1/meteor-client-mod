@@ -9,6 +9,7 @@ import meteordevelopment.meteorclient.systems.friends.PlayStatus;
 import meteordevelopment.meteorclient.utils.misc.PlayStatusEntry;
 import meteordevelopment.meteorclient.utils.misc.PlayStatusSeparatorEntry;
 import meteordevelopment.meteorclient.utils.misc.PlayStatusServerEntry;
+import meteordevelopment.meteorclient.utils.network.MeteorExecutor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerServerListWidget;
@@ -19,6 +20,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 @Mixin(MultiplayerServerListWidget.class)
 public class MultiplayerServerListWidgetMixin extends AlwaysSelectedEntryListWidget<MultiplayerServerListWidget.Entry> {
@@ -34,16 +37,25 @@ public class MultiplayerServerListWidgetMixin extends AlwaysSelectedEntryListWid
     private void onUpdateEntries(CallbackInfo callbackInfo) {
         if (!PlayStatus.get().enabled) return;
 
-        var playStatusEntries = PlayStatus.get().fetchPlayStatusEntries();
-        if (playStatusEntries == null || playStatusEntries.length == 0) return;
+        MeteorExecutor.execute(() -> {
+            var separatorEntry = new PlayStatusSeparatorEntry();
+            synchronized (this) {
+                this.addEntryToTop(separatorEntry);
+            }
 
-        for (PlayStatusEntry playStatusEntry : playStatusEntries) {
-            var entry = new PlayStatusServerEntry(this.screen, new LanServerInfo(playStatusEntry.playerName, playStatusEntry.server), playStatusEntry.name);
-            this.addEntry(entry);
-        }
+            var playStatusEntries = PlayStatus.get().fetchPlayStatusEntries();
+            if (playStatusEntries == null) return;
 
-        var separatorEntry = new PlayStatusSeparatorEntry();
-        this.addEntry(separatorEntry);
+            for (int i = playStatusEntries.length - 1; i >= 0; i--) {
+                if (playStatusEntries[i].playerName.equals(mc.player != null ? mc.player.getName().getString() : null))
+                    continue;
+
+                var entry = new PlayStatusServerEntry(this.screen, new LanServerInfo(playStatusEntries[i].playerName, playStatusEntries[i].server), playStatusEntries[i].name);
+                synchronized (this) {
+                    this.addEntryToTop(entry);
+                }
+            }
+        });
     }
 }
 

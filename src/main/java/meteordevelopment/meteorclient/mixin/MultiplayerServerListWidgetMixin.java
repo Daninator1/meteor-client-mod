@@ -6,7 +6,6 @@
 package meteordevelopment.meteorclient.mixin;
 
 import meteordevelopment.meteorclient.systems.friends.PlayStatus;
-import meteordevelopment.meteorclient.utils.misc.PlayStatusEntry;
 import meteordevelopment.meteorclient.utils.misc.PlayStatusSeparatorEntry;
 import meteordevelopment.meteorclient.utils.misc.PlayStatusServerEntry;
 import meteordevelopment.meteorclient.utils.network.MeteorExecutor;

@@ -38,13 +38,13 @@ public class MultiplayerServerListWidgetMixin extends AlwaysSelectedEntryListWid
         if (!PlayStatus.get().enabled) return;
 
         MeteorExecutor.execute(() -> {
+            var playStatusEntries = PlayStatus.get().fetchPlayStatusEntries();
+            if (playStatusEntries.length == 0) return;
+
             var separatorEntry = new PlayStatusSeparatorEntry();
             synchronized (this) {
                 this.addEntryToTop(separatorEntry);
             }
-
-            var playStatusEntries = PlayStatus.get().fetchPlayStatusEntries();
-            if (playStatusEntries == null) return;
 
             for (int i = playStatusEntries.length - 1; i >= 0; i--) {
                 if (playStatusEntries[i].playerName.equals(mc.player != null ? mc.player.getName().getString() : null))

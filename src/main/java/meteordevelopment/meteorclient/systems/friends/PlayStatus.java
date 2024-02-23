@@ -19,8 +19,6 @@ import meteordevelopment.meteorclient.utils.world.TickRate;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.nbt.NbtCompound;
 
-import java.util.Arrays;
-
 import static meteordevelopment.meteorclient.MeteorClient.LOG;
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
@@ -30,9 +28,9 @@ public class PlayStatus extends System<PlayStatus> {
     public String name = "";
     public String server = "";
     public String apiKey = "";
+    public int updateIntervalInSeconds = 10;
     public PlayStatusEntry[] playStatusEntries;
     private float counter;
-    private int updateIntervalInSeconds;
 
     public PlayStatus() {
         super("play-status");
@@ -41,7 +39,6 @@ public class PlayStatus extends System<PlayStatus> {
     @Override
     public void init() {
         this.counter = 0;
-        this.updateIntervalInSeconds = 10;
         this.playStatusEntries = new PlayStatusEntry[0];
     }
 
@@ -56,6 +53,7 @@ public class PlayStatus extends System<PlayStatus> {
         tag.putString("name", this.name);
         tag.putString("server", this.server);
         tag.putString("apiKey", this.apiKey);
+        tag.putInt("updateInterval", this.updateIntervalInSeconds);
         return tag;
     }
 
@@ -65,6 +63,7 @@ public class PlayStatus extends System<PlayStatus> {
         this.name = tag.getString("name");
         this.server = tag.getString("server");
         this.apiKey = tag.getString("apiKey");
+        this.updateIntervalInSeconds = tag.getInt("updateInterval");
         return this;
     }
 

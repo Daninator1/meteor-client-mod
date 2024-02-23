@@ -9,24 +9,10 @@ import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.tabs.Tab;
 import meteordevelopment.meteorclient.gui.tabs.TabScreen;
 import meteordevelopment.meteorclient.gui.tabs.WindowTabScreen;
-import meteordevelopment.meteorclient.gui.widgets.containers.WHorizontalList;
-import meteordevelopment.meteorclient.gui.widgets.containers.WSection;
-import meteordevelopment.meteorclient.gui.widgets.containers.WTable;
-import meteordevelopment.meteorclient.gui.widgets.input.WTextBox;
-import meteordevelopment.meteorclient.gui.widgets.pressable.WMinus;
-import meteordevelopment.meteorclient.gui.widgets.pressable.WPlus;
 import meteordevelopment.meteorclient.settings.*;
-import meteordevelopment.meteorclient.systems.config.Config;
-import meteordevelopment.meteorclient.systems.friends.Friend;
-import meteordevelopment.meteorclient.systems.friends.Friends;
 import meteordevelopment.meteorclient.systems.friends.PlayStatus;
-import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.NbtUtils;
-import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.network.PlayerListEntry;
-
-import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 public class PlayStatusTab extends Tab {
     public PlayStatusTab() {
@@ -85,6 +71,17 @@ public class PlayStatusTab extends Tab {
                     .description("The API key to use for the server.")
                     .onChanged(apiKey -> PlayStatus.get().apiKey = apiKey)
                     .onModuleActivated(stringSetting -> stringSetting.set(PlayStatus.get().apiKey))
+                    .build()
+            );
+
+            sgGeneral.add(
+                new IntSetting.Builder()
+                    .name("update-interval")
+                    .description("The update interval in seconds.")
+                    .onChanged(updateInterval -> PlayStatus.get().updateIntervalInSeconds = updateInterval)
+                    .onModuleActivated(intSetting -> intSetting.set(PlayStatus.get().updateIntervalInSeconds))
+                    .defaultValue(10)
+                    .min(1)
                     .build()
             );
 

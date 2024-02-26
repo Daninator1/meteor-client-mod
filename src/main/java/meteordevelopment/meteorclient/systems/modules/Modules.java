@@ -515,6 +515,7 @@ public class Modules extends System<Modules> {
         add(new PopChams());
         add(new TunnelESP());
         add(new BetterTab());
+        add(new ChunkTest());
     }
 
     private void initWorld() {

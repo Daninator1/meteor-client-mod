@@ -9,6 +9,7 @@ public class PostProcessShaders {
     public static EntityShader CHAMS;
     public static EntityShader ENTITY_OUTLINE;
     public static PostProcessShader STORAGE_OUTLINE;
+    public static PostProcessShader CHUNK_OUTLINE;
 
     public static boolean rendering;
 
@@ -17,12 +18,14 @@ public class PostProcessShaders {
         CHAMS = new ChamsShader();
         ENTITY_OUTLINE = new EntityOutlineShader();
         STORAGE_OUTLINE = new StorageOutlineShader();
+        CHUNK_OUTLINE = new ChunkOutlineShader();
     }
 
     public static void beginRender() {
         CHAMS.beginRender();
         ENTITY_OUTLINE.beginRender();
         STORAGE_OUTLINE.beginRender();
+        CHUNK_OUTLINE.beginRender();
     }
 
     public static void endRender() {
@@ -36,6 +39,7 @@ public class PostProcessShaders {
         CHAMS.onResized(width, height);
         ENTITY_OUTLINE.onResized(width, height);
         STORAGE_OUTLINE.onResized(width, height);
+        CHUNK_OUTLINE.onResized(width, height);
     }
 
     public static boolean isCustom(VertexConsumerProvider vcp) {

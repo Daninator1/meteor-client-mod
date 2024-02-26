@@ -51,6 +51,7 @@
     "ChunkOcclusionDataBuilderMixin",
     "ChunkSkyLightProviderMixin",
     "ClientChunkManagerAccessor",
+    "ClientChunkManagerMixin",
     "ClientChunkMapAccessor",
     "ClientConnectionAccessor",
     "ClientConnectionMixin",

@@ -5,6 +5,6 @@
 
 package meteordevelopment.meteorclient.mixininterface;
 
-public interface IClientPlayerInteractionManager {
-    void meteor$syncSelected();
+public interface IText {
+    void meteor$invalidateCache();
 }

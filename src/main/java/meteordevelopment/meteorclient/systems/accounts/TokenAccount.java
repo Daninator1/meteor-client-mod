@@ -3,8 +3,8 @@
  * Copyright (c) Meteor Development.
  */
 
-package meteordevelopment.meteorclient.mixininterface;
+package meteordevelopment.meteorclient.systems.accounts;
 
-public interface IClientPlayerInteractionManager {
-    void meteor$syncSelected();
+public interface TokenAccount {
+    String getToken();
 }

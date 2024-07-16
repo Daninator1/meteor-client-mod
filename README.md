@@ -11,9 +11,6 @@
 <div align="center">
     <img src="https://img.shields.io/github/last-commit/Daninator1/meteor-client-mod" alt="GitHub last commit"/>
     <img src="https://img.shields.io/github/commit-activity/w/Daninator1/meteor-client-mod" alt="GitHub commit activity"/>
-    <br>
-    <img src="https://img.shields.io/github/languages/code-size/Daninator1/meteor-client-mod" alt="GitHub code size in bytes"/>
-    <img src="https://tokei.rs/b1/github/Daninator1/meteor-client-mod" alt="GitHub lines of code"/>
     <img src="https://img.shields.io/github/contributors/Daninator1/meteor-client-mod" alt="GitHub contributors"/>
     <br>
     <img src="https://img.shields.io/github/languages/code-size/Daninator1/meteor-client-mod" alt="GitHub code size in bytes"/>

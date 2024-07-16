@@ -5,12 +5,10 @@ import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.util.UndashedUuid;
 import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.systems.accounts.ProfileResponse;
-import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.systems.accounts.TexturesJson;
 import meteordevelopment.meteorclient.systems.accounts.UuidToProfileResponse;
 import meteordevelopment.meteorclient.utils.PostInit;
 import meteordevelopment.meteorclient.utils.network.Http;
-import net.minecraft.util.Identifier;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 
@@ -109,7 +107,7 @@ public class PlayerHeadUtils {
 
     public static ByteBuffer loadSteveHeadData() {
         try {
-            ByteBuffer data = TextureUtil.readResource(mc.getResourceManager().getResource(new Identifier(MeteorClient.MOD_ID, "textures/steve.png")).get().getInputStream());
+            ByteBuffer data = TextureUtil.readResource(mc.getResourceManager().getResource(MeteorClient.identifier("textures/steve.png")).get().getInputStream());
             data.rewind();
 
             try (MemoryStack stack = MemoryStack.stackPush()) {

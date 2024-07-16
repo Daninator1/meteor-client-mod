@@ -124,7 +124,7 @@ public class PlayStatus extends System<PlayStatus> {
                 mc.getSession().getUsername(),
                 Utils.getWorldName(),
                 new PlayStatusPosition(mc.player.getX(), mc.player.getY(), mc.player.getZ()),
-                mc.world.getDimensionKey().getValue().toString()
+                mc.world.getDimensionEntry().getIdAsString()
             );
         }
 

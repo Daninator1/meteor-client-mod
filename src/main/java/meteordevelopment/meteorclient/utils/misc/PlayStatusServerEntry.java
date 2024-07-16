@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.utils.misc;
 
+import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.utils.render.ByteTexture;
 import meteordevelopment.meteorclient.utils.render.PlayerHeadUtils;
 import net.fabricmc.api.EnvType;
@@ -36,13 +37,13 @@ public class PlayStatusServerEntry extends MultiplayerServerListWidget.Entry {
         this.client = MinecraftClient.getInstance();
 
         var defaultTexture = new ByteTexture(8, 8, PlayerHeadUtils.loadSteveHeadData(), ByteTexture.Format.RGB, ByteTexture.Filter.Nearest, ByteTexture.Filter.Nearest);
-        mc.getTextureManager().registerTexture(new Identifier(this.server.getMotd().toLowerCase()), defaultTexture);
+        mc.getTextureManager().registerTexture(MeteorClient.identifier(this.server.getMotd().toLowerCase()), defaultTexture);
 
         new Thread(() -> {
             var skinUrl = PlayerHeadUtils.getSkinUrl(this.server.getMotd());
             if (skinUrl != null) {
                 var headTexture = new ByteTexture(8, 8, PlayerHeadUtils.loadHeadData(skinUrl), ByteTexture.Format.RGB, ByteTexture.Filter.Nearest, ByteTexture.Filter.Nearest);
-                mc.getTextureManager().registerTexture(new Identifier(this.server.getMotd().toLowerCase()), headTexture);
+                mc.getTextureManager().registerTexture(MeteorClient.identifier(this.server.getMotd().toLowerCase()), headTexture);
             }
         }).start();
     }
@@ -57,7 +58,7 @@ public class PlayStatusServerEntry extends MultiplayerServerListWidget.Entry {
             context.drawText(this.client.textRenderer, this.server.getAddressPort(), x + 32 + 3, y + 12 + 11, 0x303030, false);
         }
 
-        this.draw(context, x, y, new Identifier(this.server.getMotd().toLowerCase()));
+        this.draw(context, x, y, MeteorClient.identifier(this.server.getMotd().toLowerCase()));
     }
 
     protected void draw(DrawContext context, int x, int y, Identifier textureId) {

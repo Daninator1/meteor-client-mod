@@ -14,7 +14,6 @@ import meteordevelopment.meteorclient.systems.proxies.Proxy;
 import meteordevelopment.meteorclient.utils.misc.PlayStatusSeparatorEntry;
 import meteordevelopment.meteorclient.utils.misc.PlayStatusServerEntry;
 import meteordevelopment.meteorclient.utils.render.color.Color;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
@@ -29,6 +28,7 @@ import net.minecraft.text.Text;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
@@ -50,10 +50,14 @@ public abstract class MultiplayerScreenMixin extends Screen {
     @Shadow
     protected abstract void connect(ServerInfo entry);
 
+    @Unique
     private int textColor1;
+    @Unique
     private int textColor2;
 
+    @Unique
     private String loggedInAs;
+    @Unique
     private int loggedInAsLength;
 
     public MultiplayerScreenMixin(Text title) {

@@ -12,10 +12,12 @@ import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.systems.modules.Modules;
+import meteordevelopment.meteorclient.systems.modules.combat.KillAura;
 import meteordevelopment.meteorclient.systems.modules.player.AutoEat;
 import meteordevelopment.meteorclient.systems.modules.player.AutoGap;
 import meteordevelopment.meteorclient.systems.modules.player.AutoTool;
-import meteordevelopment.meteorclient.systems.modules.player.InstaMine;
+import meteordevelopment.meteorclient.systems.modules.player.InstantRebreak;
+import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.misc.HorizontalDirection;
 import meteordevelopment.meteorclient.utils.misc.MBlockPos;
 import meteordevelopment.meteorclient.utils.player.CustomPlayerInput;
@@ -32,7 +34,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.input.Input;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
@@ -213,7 +214,11 @@ public class HighwayBuilder extends Module {
     private final Setting<List<Item>> trashItems = sgInventory.add(new ItemListSetting.Builder()
         .name("trash-items")
         .description("Items that are considered trash and can be thrown out.")
-        .defaultValue(Items.NETHERRACK, Items.QUARTZ, Items.GOLD_NUGGET, Items.GOLDEN_SWORD, Items.GLOWSTONE_DUST, Items.GLOWSTONE, Items.BLACKSTONE, Items.BASALT, Items.GHAST_TEAR, Items.SOUL_SAND, Items.SOUL_SOIL)
+        .defaultValue(
+            Items.NETHERRACK, Items.QUARTZ, Items.GOLD_NUGGET, Items.GOLDEN_SWORD, Items.GLOWSTONE_DUST,
+            Items.GLOWSTONE, Items.BLACKSTONE, Items.BASALT, Items.GHAST_TEAR, Items.SOUL_SAND, Items.SOUL_SOIL,
+            Items.ROTTEN_FLESH
+        )
         .build()
     );
 
@@ -234,20 +239,20 @@ public class HighwayBuilder extends Module {
         .build()
     );
 
-    private final Setting<Boolean> instamineEchests = sgInventory.add(new BoolSetting.Builder()
-        .name("instamine-echests")
-        .description("Whether or not to use the instamine exploit to break echests.")
+    private final Setting<Boolean> rebreakEchests = sgInventory.add(new BoolSetting.Builder()
+        .name("instantly-rebreak-echests")
+        .description("Whether or not to use the instant rebreak exploit to break echests.")
         .defaultValue(false)
         .visible(mineEnderChests::get)
         .build()
     );
 
-    private final Setting<Integer> instamineDelay = sgInventory.add(new IntSetting.Builder()
-        .name("instamine-delay")
-        .description("Delay between instamine attempts.")
+    private final Setting<Integer> rebreakTimer = sgInventory.add(new IntSetting.Builder()
+        .name("rebreak-delay")
+        .description("Delay between rebreak attempts.")
         .defaultValue(0)
         .sliderMax(20)
-        .visible(() -> mineEnderChests.get() && instamineEchests.get())
+        .visible(() -> mineEnderChests.get() && rebreakEchests.get())
         .build()
     );
 
@@ -338,6 +343,7 @@ public class HighwayBuilder extends Module {
             - getting echests and picks from shulker boxes - refactor echest blockade to be more general purpose?
             - access to your ec
         - separate walking forwards from the current state to speed up actions
+        - fix issues related to y level changes
      */
 
     @Override
@@ -365,7 +371,7 @@ public class HighwayBuilder extends Module {
         if (blocksPerTick.get() > 1 && rotation.get().mine) warning("With rotations enabled, you can break at most 1 block per tick.");
         if (placementsPerTick.get() > 1 && rotation.get().place) warning("With rotations enabled, you can place at most 1 block per tick.");
 
-        if (Modules.get().get(InstaMine.class).isActive()) warning("It's recommended to disable the InstaMine module and instead use 'instamine-echests' to avoid errors.");
+        if (Modules.get().get(InstantRebreak.class).isActive()) warning("It's recommended to disable the Instant Rebreak module and instead use the 'instantly-rebreak-echests' setting to avoid errors.");
     }
 
     @Override
@@ -407,6 +413,7 @@ public class HighwayBuilder extends Module {
 
         if (Modules.get().get(AutoEat.class).eating) return;
         if (Modules.get().get(AutoGap.class).isEating()) return;
+        if (Modules.get().get(KillAura.class).attacking) return;
 
         if (pauseOnLag.get() && TickRate.INSTANCE.getTimeSinceLastTick() >= 2.0f) return;
 
@@ -751,7 +758,7 @@ public class HighwayBuilder extends Module {
             private int minimumObsidian;
             private boolean first, primed;
             private boolean stopTimerEnabled;
-            private int stopTimer, moveTimer, instamineTimer;
+            private int stopTimer, moveTimer, rebreakTimer;
 
             @Override
             protected void start(HighwayBuilder b) {
@@ -849,14 +856,14 @@ public class HighwayBuilder extends Module {
 
                     InvUtils.swap(slot, false);
 
-                    if (b.instamineEchests.get() && primed) {
-                        if (instamineTimer > 0) {
-                            instamineTimer--;
+                    if (b.rebreakEchests.get() && primed) {
+                        if (rebreakTimer > 0) {
+                            rebreakTimer--;
                             return;
                         }
 
                         PlayerActionC2SPacket p = new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, bp, BlockUtils.getDirection(bp));
-                        instamineTimer = b.instamineDelay.get();
+                        rebreakTimer = b.rebreakTimer.get();
 
                         if (b.rotation.get().mine) Rotations.rotate(Rotations.getYaw(bp), Rotations.getPitch(bp), () -> b.mc.getNetworkHandler().sendPacket(p));
                         else b.mc.getNetworkHandler().sendPacket(p);
@@ -964,8 +971,8 @@ public class HighwayBuilder extends Module {
         private int findHotbarSlot(HighwayBuilder b, boolean replaceTools) {
             int thrashSlot = -1;
             int slotsWithBlocks = 0;
-            int slotWithLeastBlocks = 65;
-            int slowWithLeastBlocksCount = 0;
+            int slotWithLeastBlocks = -1;
+            int slotWithLeastBlocksCount = Integer.MAX_VALUE;
 
             // Loop hotbar
             for (int i = 0; i < 9; i++) {
@@ -984,8 +991,8 @@ public class HighwayBuilder extends Module {
                 if (itemStack.getItem() instanceof BlockItem blockItem && b.blocksToPlace.get().contains(blockItem.getBlock())) {
                     slotsWithBlocks++;
 
-                    if (itemStack.getCount() < slowWithLeastBlocksCount) {
-                        slowWithLeastBlocksCount = itemStack.getCount();
+                    if (itemStack.getCount() < slotWithLeastBlocksCount) {
+                        slotWithLeastBlocksCount = itemStack.getCount();
                         slotWithLeastBlocks = i;
                     }
                 }
@@ -1058,7 +1065,7 @@ public class HighwayBuilder extends Module {
 
             for (int i = 0; i < b.mc.player.getInventory().main.size(); i++) {
                 double score = AutoTool.getScore(b.mc.player.getInventory().getStack(i), blockState, false, false, AutoTool.EnchantPreference.None, itemStack -> {
-                    if (noSilkTouch && EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, itemStack) != 0) return false;
+                    if (noSilkTouch && Utils.hasEnchantment(itemStack, Enchantments.SILK_TOUCH)) return false;
                     return !b.dontBreakTools.get() || itemStack.getMaxDamage() - itemStack.getDamage() > 1;
                 });
 
@@ -1073,7 +1080,10 @@ public class HighwayBuilder extends Module {
             if (b.mc.player.getInventory().getStack(bestSlot).getItem() instanceof PickaxeItem ){
                 int count = countItem(b, stack -> stack.getItem() instanceof PickaxeItem);
 
-                if (count <= b.savePickaxes.get()) b.error("Found less than the selected amount of pickaxes required: " + count + "/"  + (b.savePickaxes.get() + 1));
+                if (count <= b.savePickaxes.get()) {
+                    b.error("Found less than the selected amount of pickaxes required: " + count + "/" + (b.savePickaxes.get() + 1));
+                    return -1;
+                }
             }
 
             // Check if the tool is already in hotbar

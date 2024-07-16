@@ -16,6 +16,8 @@
     <img src="https://tokei.rs/b1/github/Daninator1/meteor-client-mod" alt="GitHub lines of code"/>
     <img src="https://img.shields.io/github/contributors/Daninator1/meteor-client-mod" alt="GitHub contributors"/>
     <br>
+    <img src="https://img.shields.io/github/languages/code-size/Daninator1/meteor-client-mod" alt="GitHub code size in bytes"/>
+    <img src="https://img.shields.io/endpoint?url=https://ghloc.vercel.app/api/Daninator1/meteor-client-mod/badge?filter=.java$&label=lines%20of%20code&color=blue" alt="GitHub lines of code"/>
 </div>
 
 ## Usage

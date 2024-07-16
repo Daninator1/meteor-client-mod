@@ -28,8 +28,11 @@ import java.util.List;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
-public abstract class TitleScreenCredits {
+public class TitleScreenCredits {
     private static final List<Credit> credits = new ArrayList<>();
+
+    private TitleScreenCredits() {
+    }
 
     private static void init() {
         // Add addons
@@ -46,6 +49,7 @@ public abstract class TitleScreenCredits {
 
                 GithubRepo repo = credit.addon.getRepo();
                 Http.Request request = Http.get("https://api.github.com/repos/%s/branches/%s".formatted(repo.getOwnerName(), repo.branch()));
+                request.exceptionHandler(e -> MeteorClient.LOG.error("Could not fetch repository information for addon '%s'.".formatted(credit.addon.name), e));
                 repo.authenticate(request);
                 HttpResponse<Response> res = request.sendJsonResponse(Response.class);
 

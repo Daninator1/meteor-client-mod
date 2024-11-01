@@ -17,6 +17,7 @@ import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.orbit.EventHandler;
+import meteordevelopment.orbit.EventPriority;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
 
@@ -57,6 +58,13 @@ public class Sprint extends Module {
         .build()
     );
 
+    private final Setting<Boolean> unsprintInWater = sgGeneral.add(new BoolSetting.Builder()
+        .name("unsprint-in-water")
+        .description("Whether to stop sprinting when in water.")
+        .defaultValue(true)
+        .build()
+    );
+
     public Sprint() {
         super(Categories.Movement, "sprint", "Automatically sprints.");
     }
@@ -71,7 +79,7 @@ public class Sprint extends Module {
         if (shouldSprint()) mc.player.setSprinting(true);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     private void onPacketSend(PacketEvent.Send event) {
         if (!unsprintOnHit.get() || !(event.packet instanceof IPlayerInteractEntityC2SPacket packet) || packet.getType() != PlayerInteractEntityC2SPacket.InteractType.ATTACK) return;
 
@@ -91,6 +99,8 @@ public class Sprint extends Module {
     }
 
     public boolean shouldSprint() {
+        if (unsprintInWater.get() && (mc.player.isTouchingWater() || mc.player.isSubmergedInWater())) return false;
+
         boolean strictSprint = mc.player.forwardSpeed > 1.0E-5F
             && ((ClientPlayerEntityAccessor) mc.player).invokeCanSprint()
             && (!mc.player.horizontalCollision || mc.player.collidedSoftly)

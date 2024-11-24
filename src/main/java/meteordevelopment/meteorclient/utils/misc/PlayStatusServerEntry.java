@@ -15,6 +15,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerServerListWidget;
 import net.minecraft.client.network.LanServerInfo;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -62,7 +63,7 @@ public class PlayStatusServerEntry extends MultiplayerServerListWidget.Entry {
     }
 
     protected void draw(DrawContext context, int x, int y, Identifier textureId) {
-        context.drawTexture(textureId, x, y, 0.0f, 0.0f, 32, 32, 32, 32);
+        context.drawTexture(RenderLayer::getGuiTextured, textureId, x, y, 0.0f, 0.0f, 32, 32, 32, 32);
     }
 
     @Override

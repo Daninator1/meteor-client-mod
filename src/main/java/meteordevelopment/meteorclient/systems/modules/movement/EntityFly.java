@@ -95,6 +95,6 @@ public class EntityFly extends Module {
         else velY -= fallSpeed.get() / 20;
 
         // Apply velocity
-        ((IVec3d) velocity).set(velX, velY, velZ);
+        ((IVec3d) velocity).meteor$set(velX, velY, velZ);
     }
 }

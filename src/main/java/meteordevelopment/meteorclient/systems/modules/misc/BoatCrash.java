@@ -81,7 +81,7 @@ public class BoatCrash extends Module {
             BlockPos start = mc.player.getBlockPos();
             Vec3d end = new Vec3d(start.getX() + .5, start.getY() + 1, start.getZ() + .5);
             vehicle.updatePosition(end.x, end.y - 1, end.z);
-            VehicleMoveC2SPacket PACKET2 = new VehicleMoveC2SPacket(vehicle);
+            VehicleMoveC2SPacket PACKET2 = VehicleMoveC2SPacket.fromVehicle(vehicle);
             for (int i = 0; i < amount.get(); i++) {
                 mc.getNetworkHandler().sendPacket(PACKET2);
             }

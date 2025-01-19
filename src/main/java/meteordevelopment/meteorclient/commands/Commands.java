@@ -63,6 +63,7 @@ public class Commands {
         add(new WaspCommand());
         add(new LocateCommand());
         add(new PlayStatusCommand());
+        add(new TeleportCommand());
 
         COMMANDS.sort(Comparator.comparing(Command::getName));
     }

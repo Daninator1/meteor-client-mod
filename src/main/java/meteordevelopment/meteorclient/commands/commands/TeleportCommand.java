@@ -19,7 +19,7 @@ public class TeleportCommand extends Command {
     @Override
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
         builder.then(argument("pos", Vec3ArgumentType.vec3()).executes(context -> {
-            mc.player.setPosition(context.getArgument("pos", PosArgument.class).getPos(mc.player.getCommandSource(mc.getServer().getWorld(mc.player.getEntityWorld().getRegistryKey()))));
+            mc.player.setPosition(context.getArgument("pos", PosArgument.class).getPos(mc.player.getCommandSource(mc.getServer().getOverworld())));
             return SINGLE_SUCCESS;
         }));
     }

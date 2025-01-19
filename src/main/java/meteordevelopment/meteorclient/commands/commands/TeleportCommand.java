@@ -13,7 +13,7 @@ import net.minecraft.command.argument.Vec3ArgumentType;
 
 public class TeleportCommand extends Command {
     public TeleportCommand() {
-        super("gamemode", "Teleports you to a given position.", "tp");
+        super("teleport", "Teleports you to a given position.", "tp");
     }
 
     @Override

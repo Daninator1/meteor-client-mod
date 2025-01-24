@@ -13,6 +13,7 @@ import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.vehicle.AbstractBoatEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
 import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
@@ -66,7 +67,7 @@ public class BoatCrash extends Module {
     private void onTick(TickEvent.Post event) {
         if (mc.player == null || mc.getNetworkHandler() == null) return;
         Entity boat = mc.player.getVehicle();
-        if (!(boat instanceof BoatEntity)) {
+        if (!(boat instanceof AbstractBoatEntity)) {
             error("You must be in a boat - disabling.");
             toggle();
             return;

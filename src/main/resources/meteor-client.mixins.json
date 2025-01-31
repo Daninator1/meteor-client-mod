@@ -165,6 +165,7 @@
     "ScreenMixin",
     "SectionedEntityCacheAccessor",
     "ServerEntryMixin",
+    "ServerInfoMixin",
     "ServerPlayerEntityMixin",
     "ServerResourcePackLoaderMixin",
     "ShapeIndexBufferAccessor",

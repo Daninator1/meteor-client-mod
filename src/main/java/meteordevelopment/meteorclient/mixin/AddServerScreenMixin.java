@@ -8,6 +8,7 @@ package meteordevelopment.meteorclient.mixin;
 import net.minecraft.client.gui.screen.multiplayer.AddServerScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.CheckboxWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.text.Text;
 import org.objectweb.asm.Opcodes;
@@ -33,6 +34,13 @@ public class AddServerScreenMixin extends Screen {
             new ButtonWidget.Builder(Text.literal("Use last"), button -> ((AddServerScreenAccessor) this).getAddressField().setText(this.client != null ? this.client.options.lastServer : ""))
                 .position(this.width / 2 + 104, 106)
                 .size(50, 20)
+                .build()
+        );
+
+        this.addDrawableChild(
+            CheckboxWidget.builder(Text.literal("Cloud sync"), this.textRenderer)
+                .pos(this.width / 2 + 104 + 50, 128)
+                .checked(false)
                 .build()
         );
     }

@@ -5,9 +5,9 @@
 
 package meteordevelopment.meteorclient.mixin;
 
-import meteordevelopment.meteorclient.mixininterface.ICloudServerInfo;
-import net.minecraft.client.gui.screen.multiplayer.AddServerScreen;
+import meteordevelopment.meteorclient.mixininterface.ISyncedServerInfo;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.multiplayer.AddServerScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CheckboxWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -50,7 +50,7 @@ public class AddServerScreenMixin extends Screen {
                 .build()
         );
 
-        this.syncWithServer = this.server != null && ((ICloudServerInfo) this.server).getCloudId() != null;
+        this.syncWithServer = this.server != null && ((ISyncedServerInfo) this.server).getId() != null;
 
         this.addDrawableChild(
             CheckboxWidget.builder(Text.literal("Sync with server"), this.textRenderer)
@@ -76,9 +76,9 @@ public class AddServerScreenMixin extends Screen {
     @Inject(method = "addAndClose", at = @At("HEAD"))
     private void onAddAndClose(CallbackInfo info) {
         if (this.syncWithServer) {
-            ((ICloudServerInfo) this.server).setCloudId(UUID.randomUUID());
+            ((ISyncedServerInfo) this.server).setId(UUID.randomUUID());
         } else {
-            ((ICloudServerInfo) this.server).setCloudId(null);
+            ((ISyncedServerInfo) this.server).setId(null);
         }
     }
 }

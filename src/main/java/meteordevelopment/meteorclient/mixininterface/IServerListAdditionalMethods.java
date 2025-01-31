@@ -5,9 +5,12 @@
 
 package meteordevelopment.meteorclient.mixininterface;
 
+import net.minecraft.client.network.ServerInfo;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.UUID;
 
-public interface ICloudServerInfo {
-    UUID getCloudId();
-    void setCloudId(UUID cloudId);
+public interface IServerListAdditionalMethods {
+    @Nullable
+    ServerInfo get(UUID id);
 }

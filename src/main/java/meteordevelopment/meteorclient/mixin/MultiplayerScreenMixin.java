@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.mixin;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import meteordevelopment.meteorclient.gui.GuiThemes;
 import meteordevelopment.meteorclient.mixininterface.IServerListAdditionalMethods;
 import meteordevelopment.meteorclient.mixininterface.ISyncedServerInfo;
@@ -16,6 +17,7 @@ import meteordevelopment.meteorclient.systems.proxies.Proxies;
 import meteordevelopment.meteorclient.systems.proxies.Proxy;
 import meteordevelopment.meteorclient.utils.misc.PlayStatusSeparatorEntry;
 import meteordevelopment.meteorclient.utils.misc.PlayStatusServerEntry;
+import meteordevelopment.meteorclient.utils.network.MeteorExecutor;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -117,6 +119,16 @@ public abstract class MultiplayerScreenMixin extends Screen {
         }
 
         this.serverList.saveFile();
+    }
+
+    @Inject(method = "removeEntry", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/ServerList;remove(Lnet/minecraft/client/network/ServerInfo;)V"))
+    private void onRemoveEntry(boolean confirmedAction, CallbackInfo ci, @Local(ordinal = 0) MultiplayerServerListWidget.Entry entry) {
+        if (!ServerSync.get().enabled) return;
+
+        var serverInfo = ((MultiplayerServerListWidget.ServerEntry) entry).getServer();
+        var syncedServerInfo = (ISyncedServerInfo) serverInfo;
+
+        MeteorExecutor.execute(() -> ServerSync.get().removeServer(syncedServerInfo.getId()));
     }
 
     @Inject(method = "render", at = @At("TAIL"))

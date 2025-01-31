@@ -14,6 +14,7 @@ import net.minecraft.client.gui.screen.multiplayer.AddServerScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CheckboxWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.text.Text;
 import org.objectweb.asm.Opcodes;
@@ -56,13 +57,27 @@ public class AddServerScreenMixin extends Screen {
         if (ServerSync.get().enabled) {
             this.syncWithServer = this.server != null && ((ISyncedServerInfo) this.server).getId() != null;
 
-            this.addDrawableChild(
-                CheckboxWidget.builder(Text.literal("Sync with server"), this.textRenderer)
-                    .pos(this.width / 2 + 104, 66)
-                    .callback((checkboxWidget, isChecked) -> this.syncWithServer = isChecked)
-                    .checked(this.syncWithServer)
-                    .build()
-            );
+            // if this is already true, it means that the server is already synced which cannot be changed except by removing the server
+            if (this.syncWithServer) {
+                var syncedText = "✅ Synced";
+                this.addDrawableChild(
+                    new TextWidget(
+                        this.width / 2 + 104,
+                        71,
+                        this.textRenderer.getWidth(syncedText),
+                        this.textRenderer.fontHeight,
+                        Text.literal(syncedText),
+                        this.textRenderer)
+                );
+            } else {
+                this.addDrawableChild(
+                    CheckboxWidget.builder(Text.literal("Sync"), this.textRenderer)
+                        .pos(this.width / 2 + 104, 68)
+                        .callback((checkboxWidget, isChecked) -> this.syncWithServer = isChecked)
+                        .checked(this.syncWithServer)
+                        .build()
+                );
+            }
         }
     }
 
@@ -83,9 +98,11 @@ public class AddServerScreenMixin extends Screen {
         if (!ServerSync.get().enabled) return;
 
         if (this.syncWithServer) {
-            var id = UUID.randomUUID();
-            ((ISyncedServerInfo) this.server).setId(id);
-            MeteorExecutor.execute(() -> ServerSync.get().addOrUpdateServer(new SyncedServerInfo(id, this.server.name, this.server.address)));
+            if (((ISyncedServerInfo) this.server).getId() == null) {
+                ((ISyncedServerInfo) this.server).setId(UUID.randomUUID());
+            }
+
+            MeteorExecutor.execute(() -> ServerSync.get().addOrUpdateServer(new SyncedServerInfo(((ISyncedServerInfo) this.server).getId(), this.server.name, this.server.address)));
         } else {
             ((ISyncedServerInfo) this.server).setId(null);
         }

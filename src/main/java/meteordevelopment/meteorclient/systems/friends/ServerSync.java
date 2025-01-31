@@ -80,7 +80,7 @@ public class ServerSync extends System<ServerSync> {
         }
     }
 
-    public void removePlayStatus(UUID id) {
+    public void removeServer(UUID id) {
         try {
             Http.delete(this.server + "/server/" + id)
                 .apiKey(this.apiKey)

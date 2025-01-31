@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.UUID;
@@ -31,7 +32,11 @@ public class ServerInfoMixin implements ICloudServerInfo {
     @Inject(method = "toNbt", at = @At("TAIL"))
     private void onToNbt(CallbackInfoReturnable<NbtCompound> cir) {
         var nbtCompound = cir.getReturnValue();
-        nbtCompound.putString("cloudId", this.cloudId.toString());
+
+        if (this.cloudId != null) {
+            nbtCompound.putString("cloudId", this.cloudId.toString());
+
+        }
     }
 
     @Inject(method = "fromNbt", at = @At("TAIL"))
@@ -45,6 +50,11 @@ public class ServerInfoMixin implements ICloudServerInfo {
                 LOGGER.warn("Malformed cloud id", illegalArgumentException);
             }
         }
+    }
+
+    @Inject(method = "copyFrom", at = @At("TAIL"))
+    private void onCopyFrom(ServerInfo serverInfo, CallbackInfo ci) {
+        this.cloudId = ((ICloudServerInfo) serverInfo).getCloudId();
     }
 
     @Override

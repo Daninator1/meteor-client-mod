@@ -6,6 +6,9 @@
 package meteordevelopment.meteorclient.mixin;
 
 import meteordevelopment.meteorclient.mixininterface.ISyncedServerInfo;
+import meteordevelopment.meteorclient.systems.friends.ServerSync;
+import meteordevelopment.meteorclient.utils.misc.SyncedServerInfo;
+import meteordevelopment.meteorclient.utils.network.MeteorExecutor;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.multiplayer.AddServerScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -50,15 +53,17 @@ public class AddServerScreenMixin extends Screen {
                 .build()
         );
 
-        this.syncWithServer = this.server != null && ((ISyncedServerInfo) this.server).getId() != null;
+        if (ServerSync.get().enabled) {
+            this.syncWithServer = this.server != null && ((ISyncedServerInfo) this.server).getId() != null;
 
-        this.addDrawableChild(
-            CheckboxWidget.builder(Text.literal("Sync with server"), this.textRenderer)
-                .pos(this.width / 2 + 104, 66)
-                .callback((checkboxWidget, isChecked) -> this.syncWithServer = isChecked)
-                .checked(this.syncWithServer)
-                .build()
-        );
+            this.addDrawableChild(
+                CheckboxWidget.builder(Text.literal("Sync with server"), this.textRenderer)
+                    .pos(this.width / 2 + 104, 66)
+                    .callback((checkboxWidget, isChecked) -> this.syncWithServer = isChecked)
+                    .checked(this.syncWithServer)
+                    .build()
+            );
+        }
     }
 
     @Inject(
@@ -75,8 +80,12 @@ public class AddServerScreenMixin extends Screen {
 
     @Inject(method = "addAndClose", at = @At("HEAD"))
     private void onAddAndClose(CallbackInfo info) {
+        if (!ServerSync.get().enabled) return;
+
         if (this.syncWithServer) {
-            ((ISyncedServerInfo) this.server).setId(UUID.randomUUID());
+            var id = UUID.randomUUID();
+            ((ISyncedServerInfo) this.server).setId(id);
+            MeteorExecutor.execute(() -> ServerSync.get().addOrUpdateServer(new SyncedServerInfo(id, this.server.name, this.server.address)));
         } else {
             ((ISyncedServerInfo) this.server).setId(null);
         }

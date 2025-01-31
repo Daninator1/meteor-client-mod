@@ -69,7 +69,7 @@ public class ServerSync extends System<ServerSync> {
         return new SyncedServerInfo[0];
     }
 
-    private void addOrUpdateServer(SyncedServerInfo serverInfo) {
+    public void addOrUpdateServer(SyncedServerInfo serverInfo) {
         try {
             Http.post(this.server + "/server")
                 .apiKey(this.apiKey)
@@ -80,7 +80,7 @@ public class ServerSync extends System<ServerSync> {
         }
     }
 
-    private void removePlayStatus(UUID id) {
+    public void removePlayStatus(UUID id) {
         try {
             Http.delete(this.server + "/server/" + id)
                 .apiKey(this.apiKey)

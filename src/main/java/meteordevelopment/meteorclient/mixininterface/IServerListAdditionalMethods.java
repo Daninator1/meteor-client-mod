@@ -9,8 +9,11 @@ import net.minecraft.client.network.ServerInfo;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
+import java.util.stream.Stream;
 
 public interface IServerListAdditionalMethods {
     @Nullable
     ServerInfo get(UUID id);
+
+    Stream<ServerInfo> stream();
 }

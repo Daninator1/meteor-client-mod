@@ -36,6 +36,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 @Mixin(MultiplayerScreen.class)
@@ -104,6 +107,7 @@ public abstract class MultiplayerScreenMixin extends Screen {
 
         var syncedServerInfos = ServerSync.get().getServers();
 
+        // add or update servers
         for (meteordevelopment.meteorclient.utils.misc.SyncedServerInfo syncedServerInfo : syncedServerInfos) {
 
             var existingServerInfo = ((IServerListAdditionalMethods) this.serverList).get(syncedServerInfo.id);
@@ -117,6 +121,19 @@ public abstract class MultiplayerScreenMixin extends Screen {
                 this.serverList.add(newServerInfo, false);
             }
         }
+
+        // remove servers
+        var localServersToDelete = new ArrayList<ServerInfo>();
+
+        ((IServerListAdditionalMethods) this.serverList).stream().forEach(localServerInfo -> {
+            var localServerId = ((ISyncedServerInfo) localServerInfo).getId();
+            if (localServerId == null) return;
+            if (Arrays.stream(syncedServerInfos).noneMatch(syncedServerInfo -> syncedServerInfo.id.equals(localServerId))) {
+                localServersToDelete.add(localServerInfo);
+            }
+        });
+
+        localServersToDelete.forEach(localServerInfo -> this.serverList.remove(localServerInfo));
 
         this.serverList.saveFile();
     }

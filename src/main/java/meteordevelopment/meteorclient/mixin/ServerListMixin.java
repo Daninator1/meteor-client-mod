@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 @Mixin(ServerList.class)
 public class ServerListMixin implements IServerListAdditionalMethods {
@@ -46,5 +47,10 @@ public class ServerListMixin implements IServerListAdditionalMethods {
         }
 
         return null;
+    }
+
+    @Override
+    public Stream<ServerInfo> stream() {
+        return Stream.concat(this.servers.stream(), this.hiddenServers.stream());
     }
 }

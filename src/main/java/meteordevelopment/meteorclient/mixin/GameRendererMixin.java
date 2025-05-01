@@ -43,7 +43,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GameRenderer.class)
@@ -62,17 +61,17 @@ public abstract class GameRendererMixin {
     @Final
     private Camera camera;
 
-    @Shadow
-    protected abstract void bobView(MatrixStack matrices, float tickDelta);
-
-    @Shadow
-    protected abstract void tiltViewWhenHurt(MatrixStack matrices, float tickDelta);
-
     @Unique
     private Renderer3D renderer;
 
     @Unique
     private final MatrixStack matrices = new MatrixStack();
+
+    @Shadow
+    protected abstract void bobView(MatrixStack matrices, float tickDelta);
+
+    @Shadow
+    protected abstract void tiltViewWhenHurt(MatrixStack matrices, float tickDelta);
 
     @Inject(method = "renderWorld", at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/util/profiler/Profiler;swap(Ljava/lang/String;)V", args = {"ldc=hand"}))
     private void onRenderWorld(RenderTickCounter tickCounter, CallbackInfo ci, @Local(ordinal = 0) Matrix4f projection, @Local(ordinal = 2) Matrix4f view, @Local(ordinal = 1) float tickDelta, @Local MatrixStack matrixStack) {
@@ -95,10 +94,8 @@ public abstract class GameRendererMixin {
         RenderSystem.getModelViewStack().pushMatrix().mul(view);
 
         matrices.push();
-
-        tiltViewWhenHurt(matrices, camera.getLastTickDelta());
-        if (client.options.getBobView().getValue()) bobView(matrices, camera.getLastTickDelta());
-
+        tiltViewWhenHurt(matrices, camera.getLastTickProgress());
+        if (client.options.getBobView().getValue()) bobView(matrices, camera.getLastTickProgress());
         RenderSystem.getModelViewStack().mul(matrices.peek().getPositionMatrix().invert());
         matrices.pop();
 
@@ -128,15 +125,12 @@ public abstract class GameRendererMixin {
         return original;
     }
 
-    @Redirect(method = "findCrosshairTarget", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;raycast(DFZ)Lnet/minecraft/util/hit/HitResult;"))
-    private HitResult updateTargetedEntityEntityRayTraceProxy(Entity entity, double maxDistance, float tickDelta, boolean includeFluids) {
-        if (Modules.get().isActive(LiquidInteract.class)) {
-            HitResult result = entity.raycast(maxDistance, tickDelta, includeFluids);
-            if (result.getType() != HitResult.Type.MISS) return result;
+    @ModifyExpressionValue(method = "findCrosshairTarget", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;raycast(DFZ)Lnet/minecraft/util/hit/HitResult;"))
+    private HitResult modifyRaycastResult(HitResult original, Entity entity, double blockInteractionRange, double entityInteractionRange, float tickProgress, @Local(ordinal = 0, argsOnly = true) double maxDistance) {
+        if (!Modules.get().isActive(LiquidInteract.class)) return original;
+        if (original.getType() != HitResult.Type.MISS) return original;
 
-            return entity.raycast(maxDistance, tickDelta, true);
-        }
-        return entity.raycast(maxDistance, tickDelta, includeFluids);
+        return entity.raycast(maxDistance, tickProgress, true);
     }
 
     @Inject(method = "showFloatingItem", at = @At("HEAD"), cancellable = true)
@@ -151,7 +145,7 @@ public abstract class GameRendererMixin {
         return Modules.get().get(NoRender.class).noNausea() ? 0 : original;
     }
 
-    @ModifyReturnValue(method = "getFov",at = @At("RETURN"))
+    @ModifyReturnValue(method = "getFov", at = @At("RETURN"))
     private float modifyFov(float original) {
         return MeteorClient.EVENT_BUS.post(GetFovEvent.get(original)).fov;
     }
@@ -173,26 +167,26 @@ public abstract class GameRendererMixin {
             double x = cameraE.getX();
             double y = cameraE.getY();
             double z = cameraE.getZ();
-            double prevX = cameraE.prevX;
-            double prevY = cameraE.prevY;
-            double prevZ = cameraE.prevZ;
+            double lastX = cameraE.lastX;
+            double lastY = cameraE.lastY;
+            double lastZ = cameraE.lastZ;
             float yaw = cameraE.getYaw();
             float pitch = cameraE.getPitch();
-            float prevYaw = cameraE.prevYaw;
-            float prevPitch = cameraE.prevPitch;
+            float lastYaw = cameraE.lastYaw;
+            float lastPitch = cameraE.lastPitch;
 
             if (highwayBuilder) {
                 cameraE.setYaw(camera.getYaw());
                 cameraE.setPitch(camera.getPitch());
             } else {
                 ((IVec3d) cameraE.getPos()).meteor$set(freecam.pos.x, freecam.pos.y - cameraE.getEyeHeight(cameraE.getPose()), freecam.pos.z);
-                cameraE.prevX = freecam.prevPos.x;
-                cameraE.prevY = freecam.prevPos.y - cameraE.getEyeHeight(cameraE.getPose());
-                cameraE.prevZ = freecam.prevPos.z;
+                cameraE.lastX = freecam.prevPos.x;
+                cameraE.lastY = freecam.prevPos.y - cameraE.getEyeHeight(cameraE.getPose());
+                cameraE.lastZ = freecam.prevPos.z;
                 cameraE.setYaw(freecam.yaw);
                 cameraE.setPitch(freecam.pitch);
-                cameraE.prevYaw = freecam.prevYaw;
-                cameraE.prevPitch = freecam.prevPitch;
+                cameraE.lastYaw = freecam.lastYaw;
+                cameraE.lastPitch = freecam.lastPitch;
             }
 
             freecamSet = true;
@@ -200,13 +194,13 @@ public abstract class GameRendererMixin {
             freecamSet = false;
 
             ((IVec3d) cameraE.getPos()).meteor$set(x, y, z);
-            cameraE.prevX = prevX;
-            cameraE.prevY = prevY;
-            cameraE.prevZ = prevZ;
+            cameraE.lastX = lastX;
+            cameraE.lastY = lastY;
+            cameraE.lastZ = lastZ;
             cameraE.setYaw(yaw);
             cameraE.setPitch(pitch);
-            cameraE.prevYaw = prevYaw;
-            cameraE.prevPitch = prevPitch;
+            cameraE.lastYaw = lastYaw;
+            cameraE.lastPitch = lastPitch;
         }
     }
 

@@ -38,8 +38,8 @@ public class PlayerHeadTexture extends Texture {
         int[] pixel = new int[4];
 
         int i = 0;
-        for (int x = 8; x < 16; x++) {
-            for (int y = 8; y < 16; y++) {
+        for (int y = 8; y < 16; y++) {
+            for (int x = 8; x < 16; x++) {
                 skin.getData().getPixel(x, y, pixel);
 
                 for (int j = 0; j < 4; j++) {
@@ -50,8 +50,8 @@ public class PlayerHeadTexture extends Texture {
         }
 
         i = 0;
-        for (int x = 40; x < 48; x++) {
-            for (int y = 8; y < 16; y++) {
+        for (int y = 8; y < 16; y++) {
+            for (int x = 40; x < 48; x++) {
                 skin.getData().getPixel(x, y, pixel);
 
                 if (pixel[3] != 0) {
@@ -66,7 +66,7 @@ public class PlayerHeadTexture extends Texture {
 
         upload(BufferUtils.createByteBuffer(head.length).put(head));
 
-        needsRotate = true;
+        needsRotate = false;
     }
 
     public PlayerHeadTexture() {

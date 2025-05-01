@@ -120,7 +120,6 @@
     "KeyboardInputMixin",
     "KeyboardMixin",
     "LayerRenderStateAccessor",
-    "LecternScreenMixin",
     "LightmapTextureManagerMixin",
     "LightningEntityRendererMixin",
     "LivingEntityAccessor",

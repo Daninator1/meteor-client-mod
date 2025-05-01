@@ -44,13 +44,15 @@ public class ServerInfoMixin implements ISyncedServerInfo {
     private static void onFromNbt(NbtCompound root, CallbackInfoReturnable<ServerInfo> cir) {
         var serverInfo = cir.getReturnValue();
 
-        if (root.contains("id", 8)) {
-            try {
-                ((ISyncedServerInfo) serverInfo).setId(UUID.fromString(root.getString("id")));
-            } catch (IllegalArgumentException illegalArgumentException) {
-                LOGGER.warn("Malformed server id", illegalArgumentException);
+        root.getString("id").ifPresent(
+            value -> {
+                try {
+                    ((ISyncedServerInfo) serverInfo).setId(UUID.fromString(value));
+                } catch (IllegalArgumentException illegalArgumentException) {
+                    LOGGER.warn("Malformed server id", illegalArgumentException);
+                }
             }
-        }
+        );
     }
 
     @Inject(method = "copyFrom", at = @At("TAIL"))

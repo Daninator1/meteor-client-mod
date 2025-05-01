@@ -9,7 +9,6 @@ import com.llamalad7.mixinextras.sugar.Local;
 import meteordevelopment.meteorclient.gui.GuiThemes;
 import meteordevelopment.meteorclient.mixininterface.IServerListAdditionalMethods;
 import meteordevelopment.meteorclient.mixininterface.ISyncedServerInfo;
-import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.systems.friends.ServerSync;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.misc.NameProtect;
@@ -76,23 +75,16 @@ public abstract class MultiplayerScreenMixin extends Screen {
         loggedInAs = "Logged in as ";
         loggedInAsLength = textRenderer.getWidth(loggedInAs);
 
-        var additionalSpacing = 0;
-
-        if (Config.get().accountSwitcher.get()) {
-            addDrawableChild(
-                new ButtonWidget.Builder(Text.literal("Accounts"), button -> client.setScreen(GuiThemes.get().accountsScreen()))
-                    .position(this.width - 75 - 3, 3)
-                    .size(75, 20)
-                    .build()
-            );
-
-            additionalSpacing = 75 + 2;
-
-        }
+        addDrawableChild(
+            new ButtonWidget.Builder(Text.literal("Accounts"), button -> client.setScreen(GuiThemes.get().accountsScreen()))
+                .position(this.width - 75 - 3, 3)
+                .size(75, 20)
+                .build()
+        );
 
         addDrawableChild(
             new ButtonWidget.Builder(Text.literal("Proxies"), button -> client.setScreen(GuiThemes.get().proxiesScreen()))
-                .position(this.width - 75 - 3 - additionalSpacing, 3)
+                .position(this.width - 75 - 3 - 75 - 2, 3)
                 .size(75, 20)
                 .build()
         );

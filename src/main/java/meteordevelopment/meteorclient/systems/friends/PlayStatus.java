@@ -59,11 +59,11 @@ public class PlayStatus extends System<PlayStatus> {
 
     @Override
     public PlayStatus fromTag(NbtCompound tag) {
-        this.enabled = tag.getBoolean("enabled");
-        this.name = tag.getString("name");
-        this.server = tag.getString("server");
-        this.apiKey = tag.getString("apiKey");
-        this.updateIntervalInSeconds = tag.getInt("updateInterval");
+        this.enabled = tag.getBoolean("enabled", this.enabled);
+        this.name = tag.getString("name", this.name);
+        this.server = tag.getString("server", this.server);
+        this.apiKey = tag.getString("apiKey", this.apiKey);
+        this.updateIntervalInSeconds = tag.getInt("updateInterval", this.updateIntervalInSeconds);
         return this;
     }
 

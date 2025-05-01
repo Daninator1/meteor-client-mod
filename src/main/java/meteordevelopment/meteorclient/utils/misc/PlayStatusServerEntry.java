@@ -6,7 +6,8 @@
 package meteordevelopment.meteorclient.utils.misc;
 
 import meteordevelopment.meteorclient.MeteorClient;
-import meteordevelopment.meteorclient.utils.render.ByteTexture;
+import meteordevelopment.meteorclient.utils.network.MeteorExecutor;
+import meteordevelopment.meteorclient.utils.render.PlayerHeadTexture;
 import meteordevelopment.meteorclient.utils.render.PlayerHeadUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -37,16 +38,20 @@ public class PlayStatusServerEntry extends MultiplayerServerListWidget.Entry {
         this.title = title;
         this.client = MinecraftClient.getInstance();
 
-        var defaultTexture = new ByteTexture(8, 8, PlayerHeadUtils.loadSteveHeadData(), ByteTexture.Format.RGB, ByteTexture.Filter.Nearest, ByteTexture.Filter.Nearest);
-        mc.getTextureManager().registerTexture(MeteorClient.identifier(this.server.getMotd().toLowerCase()), defaultTexture);
+        mc.execute(() -> {
+            // could not use the STEVE_HEAD of PlayerHeadUtils as after a server list refresh it loses its texture
+            mc.getTextureManager().registerTexture(MeteorClient.identifier(this.server.getMotd().toLowerCase()), new PlayerHeadTexture());
+        });
 
-        new Thread(() -> {
+        MeteorExecutor.execute(() -> {
             var skinUrl = PlayerHeadUtils.getSkinUrl(this.server.getMotd());
             if (skinUrl != null) {
-                var headTexture = new ByteTexture(8, 8, PlayerHeadUtils.loadHeadData(skinUrl), ByteTexture.Format.RGB, ByteTexture.Filter.Nearest, ByteTexture.Filter.Nearest);
-                mc.getTextureManager().registerTexture(MeteorClient.identifier(this.server.getMotd().toLowerCase()), headTexture);
+                mc.execute(() -> {
+                    var headTexture = new PlayerHeadTexture(skinUrl);
+                    mc.getTextureManager().registerTexture(MeteorClient.identifier(this.server.getMotd().toLowerCase()), headTexture);
+                });
             }
-        }).start();
+        });
     }
 
     @Override

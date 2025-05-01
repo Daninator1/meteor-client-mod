@@ -46,9 +46,9 @@ public class ServerSync extends System<ServerSync> {
 
     @Override
     public ServerSync fromTag(NbtCompound tag) {
-        this.enabled = tag.getBoolean("enabled");
-        this.server = tag.getString("server");
-        this.apiKey = tag.getString("apiKey");
+        this.enabled = tag.getBoolean("enabled", this.enabled);
+        this.server = tag.getString("server", this.server);
+        this.apiKey = tag.getString("apiKey", this.apiKey);
         return this;
     }
 

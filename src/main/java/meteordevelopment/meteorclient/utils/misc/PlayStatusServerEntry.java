@@ -12,11 +12,11 @@ import meteordevelopment.meteorclient.utils.render.PlayerHeadUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerServerListWidget;
 import net.minecraft.client.network.LanServerInfo;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -55,20 +55,20 @@ public class PlayStatusServerEntry extends MultiplayerServerListWidget.Entry {
     }
 
     @Override
-    public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-        context.drawText(this.client.textRenderer, this.title, x + 32 + 3, y + 1, 0xFFFFFF, false);
-        context.drawText(this.client.textRenderer, "Playing as " + this.server.getMotd(), x + 32 + 3, y + 12, 0x808080, false);
+    public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickProgress) {
+        context.drawTextWithShadow(this.client.textRenderer, this.title, x + 32 + 3, y + 1, -1);
+        context.drawTextWithShadow(this.client.textRenderer, "Playing as " + this.server.getMotd(), x + 32 + 3, y + 12, -8355712);
         if (this.client.options.hideServerAddress) {
-            context.drawText(this.client.textRenderer, HIDDEN_ADDRESS_TEXT, x + 32 + 3, y + 12 + 11, 0x303030, false);
+            context.drawTextWithShadow(this.client.textRenderer, HIDDEN_ADDRESS_TEXT, x + 32 + 3, y + 12 + 11, -13619152);
         } else {
-            context.drawText(this.client.textRenderer, this.server.getAddressPort(), x + 32 + 3, y + 12 + 11, 0x303030, false);
+            context.drawTextWithShadow(this.client.textRenderer, this.server.getAddressPort(), x + 32 + 3, y + 12 + 11, -13619152);
         }
 
         this.draw(context, x, y, MeteorClient.identifier(this.server.getMotd().toLowerCase()));
     }
 
     protected void draw(DrawContext context, int x, int y, Identifier textureId) {
-        context.drawTexture(RenderLayer::getGuiTextured, textureId, x, y, 0.0f, 0.0f, 32, 32, 32, 32);
+        context.drawTexture(RenderPipelines.GUI_TEXTURED, textureId, x, y, 0.0f, 0.0f, 32, 32, 32, 32);
     }
 
     @Override

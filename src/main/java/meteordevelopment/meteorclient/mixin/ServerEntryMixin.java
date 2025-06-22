@@ -9,11 +9,11 @@ import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.mixininterface.ISyncedServerInfo;
 import meteordevelopment.meteorclient.systems.friends.PlayStatus;
 import meteordevelopment.meteorclient.systems.friends.ServerSync;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerServerListWidget;
 import net.minecraft.client.network.ServerInfo;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -81,10 +81,10 @@ public class ServerEntryMixin {
             int width = 10;
             int height = 10;
 
-            context.drawTexture(RenderLayer::getGuiTextured, MeteorClient.identifier("textures/cloud.png"), i, y + yOffset, 0, 0, width, height, width, height, width, height);
+            context.drawTexture(RenderPipelines.GUI_TEXTURED, MeteorClient.identifier("textures/cloud.png"), i, y + yOffset, 0, 0, width, height, width, height, width, height);
 
             if (mouseX >= i && mouseX <= i + width && mouseY >= y + yOffset && mouseY <= y + height + yOffset) {
-                this.screen.setTooltip(Text.literal("Server synced"));
+                context.drawTooltip(Text.literal("Server synced"), mouseX, mouseY);
             }
         }
     }

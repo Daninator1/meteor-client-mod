@@ -19,7 +19,7 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 public class Font {
-    public Texture texture;
+    public final Texture texture;
     private final int height;
     private final float scale;
     private final float ascent;
@@ -120,7 +120,10 @@ public class Font {
     public double render(MeshBuilder mesh, String string, double x, double y, Color color, double scale) {
         y += ascent * this.scale * scale;
 
-        for (int i = 0; i < string.length(); i++) {
+        int length = string.length();
+        mesh.ensureCapacity(length * 4, length * 6);
+
+        for (int i = 0; i < length; i++) {
             int cp = string.charAt(i);
             CharData c = charMap.get(cp);
             if (c == null) c = charMap.get(32);

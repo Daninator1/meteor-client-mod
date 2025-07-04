@@ -19,6 +19,23 @@ jobs:
           distribution: 'adopt'
           java-version: '21'
 
+      - name: Generate release tag
+        id: tag
+        run: |
+          # Extract minecraft version from gradle.properties
+          MINECRAFT_VERSION=$(grep '^minecraft_version=' gradle.properties | cut -d'=' -f2)
+          
+          # Generate timestamp for uniqueness
+          TIMESTAMP=$(date '+%Y%m%d-%H%M%S')
+          
+          # Create unique tag
+          RELEASE_TAG="${MINECRAFT_VERSION}-${TIMESTAMP}"
+          
+          echo "Generated release tag: $RELEASE_TAG"
+          echo "tag=$RELEASE_TAG" >> $GITHUB_OUTPUT
+          echo "minecraft_version=$MINECRAFT_VERSION" >> $GITHUB_OUTPUT
+          echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
+
       - name: Build with Gradle
         run: ./gradlew build
 
@@ -26,8 +43,8 @@ jobs:
         uses: marvinpinto/action-automatic-releases@latest
         with:
           repo_token: '${{ secrets.GITHUB_TOKEN }}'
-          automatic_release_tag: latest
+          automatic_release_tag: ${{ steps.tag.outputs.tag }}
           prerelease: true
-          title: Dev Build
+          title: 'Dev Build ${{ steps.tag.outputs.minecraft_version }} - ${{ steps.tag.outputs.timestamp }}'
           files: |
             ./build/libs/*.jar

@@ -29,7 +29,7 @@ jobs:
           TIMESTAMP=$(date '+%Y%m%d-%H%M%S')
           
           # Create unique tag
-          RELEASE_TAG="v${MINECRAFT_VERSION}-${TIMESTAMP}"
+          RELEASE_TAG="${MINECRAFT_VERSION}-${TIMESTAMP}"
           
           echo "Generated release tag: $RELEASE_TAG"
           echo "tag=$RELEASE_TAG" >> $GITHUB_OUTPUT

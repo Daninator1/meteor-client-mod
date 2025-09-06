@@ -11,7 +11,7 @@ import meteordevelopment.meteorclient.mixininterface.IServerListAdditionalMethod
 import meteordevelopment.meteorclient.mixininterface.ISyncedServerInfo;
 import meteordevelopment.meteorclient.systems.friends.ServerSync;
 import meteordevelopment.meteorclient.systems.modules.Modules;
-import meteordevelopment.meteorclient.systems.modules.misc.NameProtect;
+import meteordevelopment.meteorclient.systems.modules.player.NameProtect;
 import meteordevelopment.meteorclient.systems.proxies.Proxies;
 import meteordevelopment.meteorclient.systems.proxies.Proxy;
 import meteordevelopment.meteorclient.utils.misc.PlayStatusSeparatorEntry;

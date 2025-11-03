@@ -19,11 +19,14 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.List;
 
 @Mixin(MultiplayerServerListWidget.ServerEntry.class)
 public class ServerEntryMixin {
@@ -44,32 +47,70 @@ public class ServerEntryMixin {
         this.indexModifier = GetIndexModifier();
     }
 
-    @ModifyVariable(method = "render(Lnet/minecraft/client/gui/DrawContext;IIZF)V", at = @At("HEAD"), ordinal = 0)
-    private int onRenderHead(int index) {
-        return index - this.indexModifier;
+//    @ModifyVariable(method = "render(Lnet/minecraft/client/gui/DrawContext;IIZF)V", at = @At("HEAD"), ordinal = 0)
+//    private int onRenderHead(int index) {
+//        return index - this.indexModifier;
+//    }
+
+//    @ModifyVariable(
+//        method = "render(Lnet/minecraft/client/gui/DrawContext;IIZF)V", // <-- replace with the real method name
+//        at = @At(
+//            value = "INVOKE",
+//            target = "Ljava/util/List;indexOf(Ljava/lang/Object;)I",
+//            shift = At.Shift.AFTER
+//        ),
+//        ordinal = 0 // usually the first int assigned after indexOf
+//    )
+//    private int modifyIndex(int i) {
+//        // i is the original index from indexOf
+//        // modify it however you want
+//        return i - this.indexModifier;
+//    }
+
+    @Redirect(
+        method = "render(Lnet/minecraft/client/gui/DrawContext;IIZF)V",
+        at = @At(
+            value = "INVOKE",
+            target = "Ljava/util/List;indexOf(Ljava/lang/Object;)I"
+        )
+    )
+    private int renderRedirectIndexOf(List<?> list, Object obj) {
+        return list.indexOf(obj) - this.indexModifier;
     }
 
-    // TODO: fix the index stuff
+    @Redirect(
+        method = "mouseClicked(Lnet/minecraft/client/gui/Click;Z)Z",
+        at = @At(
+            value = "INVOKE",
+            target = "Ljava/util/List;indexOf(Ljava/lang/Object;)I"
+        )
+    )
+    private int mouseClickedRedirectIndexOf(List<?> list, Object obj) {
+        return list.indexOf(obj) - this.indexModifier;
+    }
 
-//    @Redirect(method = "keyPressed(Lnet/minecraft/client/input/KeyInput;)Z", at = @At(value = "INVOKE", target = "Ljava/util/List;indexOf(Ljava/lang/Object;)I", ordinal = 0))
-//    private int onKeyPressed(List<MultiplayerServerListWidget.Entry> children, Object object) {
-//        return children.indexOf(object) - this.indexModifier;
-//    }
-//
-//    @Inject(method = "keyPressed(III)Z", at = @At(value = "INVOKE", target = "Ljava/util/List;indexOf(Ljava/lang/Object;)I", shift = At.Shift.BY, by = 2), locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true)
-//    private void OnKeyPressed2(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir, MultiplayerServerListWidget multiplayerServerListWidget, int i) {
-//        if (i < 0) cir.setReturnValue(true);
-//    }
+    @Redirect(
+        method = "keyPressed(Lnet/minecraft/client/input/KeyInput;)Z",
+        at = @At(
+            value = "INVOKE",
+            target = "Ljava/util/List;indexOf(Ljava/lang/Object;)I"
+        )
+    )
+    private int keyPressedRedirectIndexOf(List<?> list, Object obj) {
+        return list.indexOf(obj) - this.indexModifier;
+    }
 
-//    @Redirect(method = "mouseClicked(DDI)Z", at = @At(value = "INVOKE", target = "Ljava/util/List;indexOf(Ljava/lang/Object;)I", ordinal = 1))
-//    private int onMouseClicked(List<MultiplayerServerListWidget.Entry> children, Object object) {
-//        return children.indexOf(object) - this.indexModifier;
-//    }
-
-//    @ModifyArg(method = "swapEntries(II)V", at = @At(value = "INVOKE", target = "Ljava/util/List;get(I)Ljava/lang/Object;"), index = 0)
-//    private int onSwapEntries(int j) {
-//        return j + this.indexModifier;
-//    }
+    /**
+     * @author me
+     * @reason because I get a warning otherwise
+     */
+    @Overwrite
+    private void swapEntries(int i, int j) {
+        this.screen.getServerList().swapEntries(i, j);
+        var serverListWidget = ((MultiplayerScreenAccessor) this.screen).meteor$getServerListWidget();
+        var entryListWidgetInvoker = (EntryListWidgetInvoker) serverListWidget;
+        entryListWidgetInvoker.meteor$swapEntriesOnPositions(i + this.indexModifier, j + this.indexModifier);
+    }
 
     @Inject(method = "render(Lnet/minecraft/client/gui/DrawContext;IIZF)V", at = @At("TAIL"))
     private void onRenderTail(DrawContext context, int mouseX, int mouseY, boolean hovered, float deltaTicks, CallbackInfo ci) {

@@ -16,18 +16,18 @@ import net.minecraft.text.Text;
 import java.util.Objects;
 
 @Environment(value = EnvType.CLIENT)
-public class PlayStatusSeparatorEntry extends MultiplayerServerListWidget.Entry {
+public class PlayStatusSeparatorEntry extends MultiplayerServerListWidget.ScanningEntry {
     private final MinecraftClient client = MinecraftClient.getInstance();
 
     public PlayStatusSeparatorEntry() {
     }
 
     @Override
-    public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+    public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
         Objects.requireNonNull(this.client.textRenderer);
-        var lineWidth = entryWidth - 10;
+        var lineWidth = getContentWidth() - 10;
         var posX = (this.client.currentScreen.width / 2 - lineWidth / 2);
-        var posY = y + entryHeight / 2;
+        var posY = getContentY() + getContentHeight() / 2;
 
         context.fill(posX, posY, posX + lineWidth, posY + 1, -1601138544);
     }
@@ -35,4 +35,6 @@ public class PlayStatusSeparatorEntry extends MultiplayerServerListWidget.Entry 
     public Text getNarration() {
         return ScreenTexts.EMPTY;
     }
+
+    // isOfSameType still uses the implementation of ScanningEntry - not sure if this is relevant
 }

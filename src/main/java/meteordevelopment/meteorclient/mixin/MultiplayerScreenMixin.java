@@ -15,7 +15,6 @@ import meteordevelopment.meteorclient.systems.modules.player.NameProtect;
 import meteordevelopment.meteorclient.systems.proxies.Proxies;
 import meteordevelopment.meteorclient.systems.proxies.Proxy;
 import meteordevelopment.meteorclient.utils.misc.PlayStatusSeparatorEntry;
-import meteordevelopment.meteorclient.utils.misc.PlayStatusServerEntry;
 import meteordevelopment.meteorclient.utils.network.MeteorExecutor;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import net.minecraft.client.gui.DrawContext;
@@ -23,7 +22,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerServerListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.network.LanServerInfo;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.option.ServerList;
 import net.minecraft.text.Text;
@@ -172,15 +170,6 @@ public abstract class MultiplayerScreenMixin extends Screen {
         context.drawTextWithShadow(mc.textRenderer, left, x, y, textColor1);
         if (right != null)
             context.drawTextWithShadow(mc.textRenderer, right, x + textRenderer.getWidth(left), y, textColor2);
-    }
-
-    @Inject(method = "connect()V", at = @At("TAIL"))
-    private void onConnect(CallbackInfo info) {
-        MultiplayerServerListWidget.Entry entry = this.serverListWidget.getSelectedOrNull();
-        if (entry instanceof PlayStatusServerEntry) {
-            LanServerInfo lanServerInfo = ((PlayStatusServerEntry) entry).getLanServerEntry();
-            this.connect(new ServerInfo(lanServerInfo.getMotd(), lanServerInfo.getAddressPort(), ServerInfo.ServerType.OTHER));
-        }
     }
 
     @Inject(method = "updateButtonActivationStates()V", at = @At("RETURN"), locals = LocalCapture.CAPTURE_FAILHARD)

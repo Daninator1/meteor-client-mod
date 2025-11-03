@@ -17,14 +17,14 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerServerListWidget;
 import net.minecraft.client.network.LanServerInfo;
+import net.minecraft.client.network.ServerInfo;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 @Environment(value = EnvType.CLIENT)
-public class PlayStatusServerEntry extends MultiplayerServerListWidget.Entry {
+public class PlayStatusServerEntry extends MultiplayerServerListWidget.LanServerEntry {
     private final String title;
     private static final String HIDDEN_ADDRESS_TEXT = Text.translatable("selectServer.hiddenAddress").getString();
     private final MultiplayerScreen screen;
@@ -33,6 +33,7 @@ public class PlayStatusServerEntry extends MultiplayerServerListWidget.Entry {
     private long time;
 
     public PlayStatusServerEntry(MultiplayerScreen screen, LanServerInfo server, String title) {
+        super(screen, server);
         this.screen = screen;
         this.server = server;
         this.title = title;
@@ -55,16 +56,16 @@ public class PlayStatusServerEntry extends MultiplayerServerListWidget.Entry {
     }
 
     @Override
-    public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickProgress) {
-        context.drawTextWithShadow(this.client.textRenderer, this.title, x + 32 + 3, y + 1, -1);
-        context.drawTextWithShadow(this.client.textRenderer, "Playing as " + this.server.getMotd(), x + 32 + 3, y + 12, -8355712);
+    public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float deltaTicks) {
+        context.drawTextWithShadow(this.client.textRenderer, this.title, getX() + 32 + 3, getY() + 1, -1);
+        context.drawTextWithShadow(this.client.textRenderer, "Playing as " + this.server.getMotd(), getContentX() + 32 + 3, getContentY() + 12, -8355712);
         if (this.client.options.hideServerAddress) {
-            context.drawTextWithShadow(this.client.textRenderer, HIDDEN_ADDRESS_TEXT, x + 32 + 3, y + 12 + 11, -13619152);
+            context.drawTextWithShadow(this.client.textRenderer, HIDDEN_ADDRESS_TEXT, getContentX() + 32 + 3, getContentY() + 12 + 11, -13619152);
         } else {
-            context.drawTextWithShadow(this.client.textRenderer, this.server.getAddressPort(), x + 32 + 3, y + 12 + 11, -13619152);
+            context.drawTextWithShadow(this.client.textRenderer, this.server.getAddressPort(), getContentX() + 32 + 3, getContentY() + 12 + 11, -13619152);
         }
 
-        this.draw(context, x, y, MeteorClient.identifier(this.server.getMotd().toLowerCase()));
+        this.draw(context, getContentX(), getContentY(), MeteorClient.identifier(this.server.getMotd().toLowerCase()));
     }
 
     protected void draw(DrawContext context, int x, int y, Identifier textureId) {
@@ -72,14 +73,9 @@ public class PlayStatusServerEntry extends MultiplayerServerListWidget.Entry {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        this.screen.select(this);
-        if (Util.getMeasuringTimeMs() - this.time < 250L) {
-            this.screen.connect();
-            mc.options.lastServer = this.server.getAddressPort();
-        }
-        this.time = Util.getMeasuringTimeMs();
-        return false;
+    public void connect() {
+        this.screen.connect(new ServerInfo(this.server.getMotd(), this.server.getAddressPort(), ServerInfo.ServerType.OTHER));
+        mc.options.lastServer = this.server.getAddressPort();
     }
 
     public LanServerInfo getLanServerEntry() {
@@ -90,4 +86,6 @@ public class PlayStatusServerEntry extends MultiplayerServerListWidget.Entry {
     public Text getNarration() {
         return Text.translatable("narrator.select", Text.literal("").append(title).append(" ").append(this.server.getMotd()));
     }
+
+    // isOfSameType still uses the implementation of LanServerEntry - not sure if this is relevant
 }

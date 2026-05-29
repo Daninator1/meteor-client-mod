@@ -24,7 +24,7 @@
       "meteordevelopment.meteorclient.MeteorClient"
     ],
     "modmenu": [
-      "meteordevelopment.meteorclient.ModMenuIntegration"
+      "meteordevelopment.meteorclient.modintegration.ModMenuIntegration"
     ]
   },
   "mixins": [
@@ -35,7 +35,7 @@
     "meteor-client-lithium.mixins.json",
     "meteor-client-viafabricplus.mixins.json"
   ],
-  "accessWidener": "meteor-client.accesswidener",
+  "accessWidener": "meteor-client.classtweaker",
   "custom": {
     "meteor-client:build_number": "${build_number}",
     "meteor-client:color": "140,0,0",
@@ -44,18 +44,22 @@
       "links": {
         "modmenu.discord": "https://meteorclient.com/discord"
       }
+    },
+    "badoptimizations:cache_hooks": {
+      "lightmap": "meteordevelopment.meteorclient.modintegration.BadOptimizationsHook"
     }
   },
   "depends": {
-    "java": ">=21",
-    "minecraft": ["${minecraft_version}", "1.21.9"],
+    "java": ">=${jdk_version}",
+    "minecraft": "${minecraft_version}",
     "fabricloader": ">=${loader_version}"
   },
   "breaks": {
     "optifabric": "*",
     "feather": "*",
     "origins": "*",
-    "sodium": "<0.7.0",
-    "morechathistory": "*"
+    "sodium": "<0.8.7",
+    "morechathistory": "*",
+    "lithium": "<0.22.1"
   }
 }

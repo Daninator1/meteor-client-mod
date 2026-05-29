@@ -18,7 +18,7 @@ import meteordevelopment.meteorclient.settings.Settings;
 import meteordevelopment.meteorclient.systems.macros.Macro;
 import meteordevelopment.meteorclient.systems.macros.Macros;
 import meteordevelopment.meteorclient.utils.misc.NbtUtils;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screens.Screen;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
@@ -98,7 +98,6 @@ public class MacrosTab extends Tab {
         public boolean save() {
             if (value.name.get().isBlank()
                 || value.messages.get().isEmpty()
-                || !value.keybind.get().isSet()
             ) return false;
 
             if (isNew) {

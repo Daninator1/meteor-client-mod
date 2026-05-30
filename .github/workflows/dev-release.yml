@@ -23,7 +23,7 @@ jobs:
         id: tag
         run: |
           # Extract Minecraft version from gradle/libs.versions.toml
-          MINECRAFT_VERSION=$(grep '^minecraft =' gradle/libs.versions.toml | cut -d'"' -f2)
+          MINECRAFT_VERSION=$(grep -m 1 '^minecraft =' gradle/libs.versions.toml | cut -d'"' -f2)
 
           # Generate timestamp for uniqueness
           TIMESTAMP=$(date '+%Y%m%d-%H%M%S')

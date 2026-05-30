@@ -21,7 +21,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.function.Supplier;
 
 @Mixin(PauseScreen.class)
-public abstract class PauseScreenMixin {
+public abstract class PauseScreenMixin extends Screen {
+
+    protected PauseScreenMixin(Component title) {
+        super(title);
+    }
 
     @Shadow
     protected abstract Button openScreenButton(Component message, Supplier<Screen> newScreen);
@@ -33,6 +37,8 @@ public abstract class PauseScreenMixin {
             shift = At.Shift.AFTER)
     )
     private void OnCreatePauseMenuAfterFirstAddChild(CallbackInfo info, @Local(name = "helper") GridLayout.RowHelper helper) {
-        helper.addChild(openScreenButton(Component.translatable("menu.multiplayer"), () -> new JoinMultiplayerScreen((Screen) (Object) this)), 2);
+        helper.addChild(Button.builder(Component.translatable("menu.multiplayer"), _ -> {
+            this.minecraft.setScreen(new JoinMultiplayerScreen(this));
+        }).width(204).build(), 2);
     }
 }

@@ -22,8 +22,8 @@ jobs:
       - name: Generate release tag
         id: tag
         run: |
-          # Extract minecraft version from gradle.properties
-          MINECRAFT_VERSION=$(grep '^minecraft_version=' gradle.properties | cut -d'=' -f2)
+          # Extract Minecraft version from gradle/libs.versions.toml
+          MINECRAFT_VERSION=$(grep '^minecraft =' gradle/libs.versions.toml | cut -d'"' -f2)
 
           # Generate timestamp for uniqueness
           TIMESTAMP=$(date '+%Y%m%d-%H%M%S')

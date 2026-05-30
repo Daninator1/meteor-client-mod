@@ -43,7 +43,7 @@ public class AccountCache implements ISerializable<AccountCache> {
             byte[] head = PlayerHeadUtils.fetchHead(UndashedUuid.fromStringLenient(uuid));
 
             mc.execute(() -> {
-                if (head != null) headTexture = new PlayerHeadTexture(head, true);
+                if (head != null) headTexture = new PlayerHeadTexture(head);
                 loadingHead = false;
                 if (callback != null) callback.run();
             });

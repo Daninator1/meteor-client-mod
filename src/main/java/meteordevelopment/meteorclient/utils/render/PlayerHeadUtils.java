@@ -30,7 +30,7 @@ public class PlayerHeadUtils {
         if (url == null) return null;
 
         try {
-            return PlayerHeadTexture.downloadHead(url);
+            return PlayerHeadTexture.downloadHead(url, true);
         } catch (java.io.IOException e) {
             MeteorClient.LOG.error("Could not fetch player head for {}.", id, e);
             return null;

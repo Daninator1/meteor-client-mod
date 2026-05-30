@@ -110,7 +110,11 @@ public abstract class JoinMultiplayerScreenMixin extends Screen {
         positionButton(proxies, proxiesPos, accountsVisible && accountPos == proxiesPos, false);
     }
 
-    @Inject(method = "init", at = @At("HEAD"))
+    @Inject(method = "init", at = @At(
+        value = "INVOKE",
+        target = "Lnet/minecraft/client/multiplayer/ServerList;load()V",
+        shift = At.Shift.AFTER
+    ))
     private void onInitSyncServers(CallbackInfo info) {
         if (!ServerSync.get().enabled) return;
 
@@ -123,9 +127,9 @@ public abstract class JoinMultiplayerScreenMixin extends Screen {
 
             if (existingServerInfo != null) {
                 existingServerInfo.name = syncedServerInfo.name;
-                existingServerInfo.ip = syncedServerInfo.ip;
+                existingServerInfo.ip = syncedServerInfo.address;
             } else {
-                var newServerInfo = new ServerData(syncedServerInfo.name, syncedServerInfo.ip, ServerData.Type.OTHER);
+                var newServerInfo = new ServerData(syncedServerInfo.name, syncedServerInfo.address, ServerData.Type.OTHER);
                 ((ISyncedServerData) newServerInfo).meteor$setId(syncedServerInfo.id);
                 this.servers.add(newServerInfo, false);
             }

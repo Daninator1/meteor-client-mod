@@ -15,11 +15,10 @@ public class PlayStatusSeparatorEntry extends ServerSelectionList.LANHeader {
 
     @Override
     public void extractContent(final GuiGraphicsExtractor graphics, final int mouseX, final int mouseY, final boolean hovered, final float a) {
-        var lineWidth = getContentWidth() - 10;
-        var posX = (getWidth() / 2 - lineWidth / 2);
+        var posX = getContentX();
         var posY = getContentY() + getContentHeight() / 2;
 
-        graphics.fill(posX, posY, posX + lineWidth, posY + 1, -1601138544);
+        graphics.fill(posX, posY, posX + getContentWidth(), posY + 1, -1601138544);
     }
 
     // isOfSameType still uses the implementation of ScanningEntry - not sure if this is relevant

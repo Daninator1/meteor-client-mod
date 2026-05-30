@@ -122,7 +122,7 @@ public class OnlineServerEntryMixin {
             int width = 10;
             int height = 10;
 
-            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, MeteorClient.identifier("textures/cloud.png"), i, thisServerEntry.getY() + yOffset, width, height);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, MeteorClient.identifier("textures/cloud.png"), i, thisServerEntry.getY() + yOffset, width, height, width, height, width, height);
 
             if (mouseX >= i && mouseX <= i + width && mouseY >= thisServerEntry.getY() + yOffset && mouseY <= thisServerEntry.getY() + height + yOffset) {
                 graphics.setTooltipForNextFrame(Component.literal("Server synced"), mouseX, mouseY);

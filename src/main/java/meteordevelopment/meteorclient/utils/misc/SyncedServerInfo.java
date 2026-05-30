@@ -10,11 +10,11 @@ import java.util.UUID;
 public class SyncedServerInfo {
     public UUID id;
     public String name;
-    public String ip;
+    public String address;
 
-    public SyncedServerInfo(UUID id, String name, String ip) {
+    public SyncedServerInfo(UUID id, String name, String address) {
         this.id = id;
         this.name = name;
-        this.ip = ip;
+        this.address = address;
     }
 }

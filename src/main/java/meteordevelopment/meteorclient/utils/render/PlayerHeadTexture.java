@@ -21,13 +21,11 @@ import java.nio.IntBuffer;
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 public class PlayerHeadTexture extends Texture {
-    private boolean needsRotate;
 
-    public PlayerHeadTexture(byte[] head, boolean needsRotate) {
+    public PlayerHeadTexture(byte[] head) {
         super(8, 8, TextureFormat.RGBA8, FilterMode.NEAREST, FilterMode.NEAREST);
 
         upload(BufferUtils.createByteBuffer(head.length).put(head));
-        this.needsRotate = needsRotate;
     }
 
     public PlayerHeadTexture() {
@@ -52,11 +50,7 @@ public class PlayerHeadTexture extends Texture {
         }
     }
 
-    public boolean needsRotate() {
-        return needsRotate;
-    }
-
-    public static byte[] downloadHead(String url) throws IOException {
+    public static byte[] downloadHead(String url, boolean needsRotate) throws IOException {
         BufferedImage skin;
         try (InputStream in = Http.get(url).sendInputStream()) {
             skin = ImageIO.read(in);
@@ -91,6 +85,23 @@ public class PlayerHeadTexture extends Texture {
             }
         }
 
+        if (needsRotate) head = rotateHeadClockwise(head);
+
         return head;
+    }
+
+    private static byte[] rotateHeadClockwise(byte[] head) {
+        byte[] rotated = new byte[head.length];
+
+        for (int y = 0; y < 8; y++) {
+            for (int x = 0; x < 8; x++) {
+                int sourceIndex = (y * 8 + x) * 4;
+                int destinationIndex = (x * 8 + (7 - y)) * 4;
+
+                System.arraycopy(head, sourceIndex, rotated, destinationIndex, 4);
+            }
+        }
+
+        return rotated;
     }
 }

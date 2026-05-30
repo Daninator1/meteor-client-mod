@@ -45,7 +45,7 @@ public class PlayStatusServerEntry extends ServerSelectionList.NetworkServerEntr
                 mc.execute(() -> {
                     PlayerHeadTexture headTexture = new PlayerHeadTexture();
                     try {
-                        headTexture = new PlayerHeadTexture(PlayerHeadTexture.downloadHead(skinUrl), false);
+                        headTexture = new PlayerHeadTexture(PlayerHeadTexture.downloadHead(skinUrl, true));
                     } catch (IOException _) {
                     }
                     mc.getTextureManager().register(MeteorClient.identifier(this.serverData.getMotd().toLowerCase()), headTexture);
@@ -64,7 +64,7 @@ public class PlayStatusServerEntry extends ServerSelectionList.NetworkServerEntr
             graphics.text(this.minecraft.font, this.serverData.getAddress(), getContentX() + 32 + 3, getContentY() + 12 + 11, -13619152);
         }
 
-        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, MeteorClient.identifier(this.serverData.getMotd().toLowerCase()), getContentX(), getContentY(), 0, 0, 32, 32, 32, 32);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, MeteorClient.identifier(this.serverData.getMotd().toLowerCase()), getContentX(), getContentY(), 0, 0, 32, 32, 32, 32);
     }
 
     @Override

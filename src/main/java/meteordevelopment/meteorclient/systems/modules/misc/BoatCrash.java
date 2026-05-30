@@ -5,20 +5,19 @@
 
 package meteordevelopment.meteorclient.systems.modules.misc;
 
-import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.events.game.GameLeftEvent;
 import meteordevelopment.meteorclient.events.world.PlaySoundEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
+import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.vehicle.AbstractBoatEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
-import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.protocol.game.ServerboundMoveVehiclePacket;
+import net.minecraft.network.protocol.game.ServerboundPaddleBoatPacket;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
+import net.minecraft.world.phys.Vec3;
 
 public class BoatCrash extends Module {
     public enum Mode {
@@ -65,33 +64,33 @@ public class BoatCrash extends Module {
 
     @EventHandler
     private void onTick(TickEvent.Post event) {
-        if (mc.player == null || mc.getNetworkHandler() == null) return;
+        if (mc.player == null || mc.getConnection() == null) return;
         Entity boat = mc.player.getVehicle();
-        if (!(boat instanceof AbstractBoatEntity)) {
+        if (!(boat instanceof AbstractBoat)) {
             error("You must be in a boat - disabling.");
             toggle();
             return;
         }
         if (mode.get() == Mode.Shit) {
-            BoatPaddleStateC2SPacket PACKET = new BoatPaddleStateC2SPacket(true, true);
+            ServerboundPaddleBoatPacket PACKET = new ServerboundPaddleBoatPacket(true, true);
             for (int i = 0; i < amount.get(); i++) {
-                mc.getNetworkHandler().sendPacket(PACKET);
+                mc.getConnection().send(PACKET);
             }
         } else {
             Entity vehicle = mc.player.getVehicle();
-            BlockPos start = mc.player.getBlockPos();
-            Vec3d end = new Vec3d(start.getX() + .5, start.getY() + 1, start.getZ() + .5);
-            vehicle.updatePosition(end.x, end.y - 1, end.z);
-            VehicleMoveC2SPacket PACKET2 = VehicleMoveC2SPacket.fromVehicle(vehicle);
+            BlockPos start = mc.player.getOnPos();
+            Vec3 end = new Vec3(start.getX() + .5, start.getY() + 1, start.getZ() + .5);
+            vehicle.setPos(end.x, end.y - 1, end.z);
+            ServerboundMoveVehiclePacket PACKET2 = ServerboundMoveVehiclePacket.fromEntity(vehicle);
             for (int i = 0; i < amount.get(); i++) {
-                mc.getNetworkHandler().sendPacket(PACKET2);
+                mc.getConnection().send(PACKET2);
             }
         }
     }
 
     @EventHandler
     private void onPlaySound(PlaySoundEvent event) {
-        if (noSound.get() && event.sound.getId().toString().equals("minecraft:entity.boat.paddle_land") || event.sound.getId().toString().equals("minecraft:entity.boat.paddle_water")) {
+        if (noSound.get() && event.sound.getIdentifier().toString().equals("minecraft:entity.boat.paddle_land") || event.sound.getIdentifier().toString().equals("minecraft:entity.boat.paddle_water")) {
             event.cancel();
         }
     }

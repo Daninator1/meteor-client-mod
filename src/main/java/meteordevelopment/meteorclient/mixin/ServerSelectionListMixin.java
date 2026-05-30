@@ -9,31 +9,32 @@ import meteordevelopment.meteorclient.systems.friends.PlayStatus;
 import meteordevelopment.meteorclient.utils.misc.PlayStatusSeparatorEntry;
 import meteordevelopment.meteorclient.utils.misc.PlayStatusServerEntry;
 import meteordevelopment.meteorclient.utils.network.MeteorExecutor;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
-import net.minecraft.client.gui.screen.multiplayer.MultiplayerServerListWidget;
-import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
-import net.minecraft.client.network.LanServerInfo;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.ObjectSelectionList;
+import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
+import net.minecraft.client.gui.screens.multiplayer.ServerSelectionList;
+import net.minecraft.client.server.LanServer;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
-@Mixin(MultiplayerServerListWidget.class)
-public class MultiplayerServerListWidgetMixin extends AlwaysSelectedEntryListWidget<MultiplayerServerListWidget.Entry> {
+@Mixin(ServerSelectionList.class)
+public class ServerSelectionListMixin extends ObjectSelectionList<ServerSelectionList.Entry> {
     @Shadow
     @Final
-    private MultiplayerScreen screen;
+    private JoinMultiplayerScreen screen;
 
-    public MultiplayerServerListWidgetMixin(MinecraftClient minecraftClient, int i, int j, int k, int l) {
-        super(minecraftClient, i, j, k, l);
+    public ServerSelectionListMixin(final JoinMultiplayerScreen screen, final Minecraft minecraft, final int width, final int height, final int y, final int itemHeight) {
+        super(minecraft, width, height, y, itemHeight);
     }
 
-    @Inject(method = "updateEntries", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screen/multiplayer/MultiplayerServerListWidget;servers:Ljava/util/List;"))
-    private void onUpdateEntries(CallbackInfo callbackInfo) {
+    @Inject(method = "refreshEntries", at = @At("HEAD"))
+    private void onRefreshEntries(CallbackInfo callbackInfo) {
         if (!PlayStatus.get().enabled) return;
 
         MeteorExecutor.execute(() -> {
@@ -49,7 +50,7 @@ public class MultiplayerServerListWidgetMixin extends AlwaysSelectedEntryListWid
                 if (playStatusEntries[i].playerName.equals(mc.player != null ? mc.player.getName().getString() : null))
                     continue;
 
-                var entry = new PlayStatusServerEntry(this.screen, new LanServerInfo(playStatusEntries[i].playerName, playStatusEntries[i].server), playStatusEntries[i].name);
+                var entry = new PlayStatusServerEntry(this.screen, new LanServer(playStatusEntries[i].playerName, playStatusEntries[i].server), playStatusEntries[i].name);
                 synchronized (this) {
                     this.addEntryToTop(entry);
                 }

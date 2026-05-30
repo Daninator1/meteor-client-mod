@@ -9,7 +9,7 @@ import meteordevelopment.meteorclient.systems.System;
 import meteordevelopment.meteorclient.systems.Systems;
 import meteordevelopment.meteorclient.utils.misc.SyncedServerInfo;
 import meteordevelopment.meteorclient.utils.network.Http;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import java.util.UUID;
 
@@ -36,8 +36,8 @@ public class ServerSync extends System<ServerSync> {
     }
 
     @Override
-    public NbtCompound toTag() {
-        NbtCompound tag = new NbtCompound();
+    public CompoundTag toTag() {
+        CompoundTag tag = new CompoundTag();
         tag.putBoolean("enabled", this.enabled);
         tag.putString("server", this.server);
         tag.putString("apiKey", this.apiKey);
@@ -45,10 +45,10 @@ public class ServerSync extends System<ServerSync> {
     }
 
     @Override
-    public ServerSync fromTag(NbtCompound tag) {
-        this.enabled = tag.getBoolean("enabled", this.enabled);
-        this.server = tag.getString("server", this.server);
-        this.apiKey = tag.getString("apiKey", this.apiKey);
+    public ServerSync fromTag(CompoundTag tag) {
+        this.enabled = tag.getBooleanOr("enabled", this.enabled);
+        this.server = tag.getStringOr("server", this.server);
+        this.apiKey = tag.getStringOr("apiKey", this.apiKey);
         return this;
     }
 

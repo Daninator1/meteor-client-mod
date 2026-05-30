@@ -5,9 +5,9 @@
 
 package meteordevelopment.meteorclient.mixin;
 
-import meteordevelopment.meteorclient.mixininterface.ISyncedServerInfo;
-import net.minecraft.client.network.ServerInfo;
-import net.minecraft.nbt.NbtCompound;
+import meteordevelopment.meteorclient.mixininterface.ISyncedServerData;
+import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.nbt.CompoundTag;
 import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,8 +20,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.UUID;
 
-@Mixin(ServerInfo.class)
-public class ServerInfoMixin implements ISyncedServerInfo {
+@Mixin(ServerData.class)
+public class ServerDataMixin implements ISyncedServerData {
 
     @Shadow
     @Final
@@ -30,8 +30,8 @@ public class ServerInfoMixin implements ISyncedServerInfo {
     @Unique
     private UUID id;
 
-    @Inject(method = "toNbt", at = @At("TAIL"))
-    private void onToNbt(CallbackInfoReturnable<NbtCompound> cir) {
+    @Inject(method = "write", at = @At("TAIL"))
+    private void onToNbt(CallbackInfoReturnable<CompoundTag> cir) {
         var nbtCompound = cir.getReturnValue();
 
         if (this.id != null) {
@@ -40,14 +40,14 @@ public class ServerInfoMixin implements ISyncedServerInfo {
         }
     }
 
-    @Inject(method = "fromNbt", at = @At("TAIL"))
-    private static void onFromNbt(NbtCompound root, CallbackInfoReturnable<ServerInfo> cir) {
-        var serverInfo = cir.getReturnValue();
+    @Inject(method = "read", at = @At("TAIL"))
+    private static void onFromNbt(CompoundTag tag, CallbackInfoReturnable<ServerData> cir) {
+        var serverData = cir.getReturnValue();
 
-        root.getString("id").ifPresent(
+        tag.getString("id").ifPresent(
             value -> {
                 try {
-                    ((ISyncedServerInfo) serverInfo).setId(UUID.fromString(value));
+                    ((ISyncedServerData) serverData).meteor$setId(UUID.fromString(value));
                 } catch (IllegalArgumentException illegalArgumentException) {
                     LOGGER.warn("Malformed server id", illegalArgumentException);
                 }
@@ -56,17 +56,17 @@ public class ServerInfoMixin implements ISyncedServerInfo {
     }
 
     @Inject(method = "copyFrom", at = @At("TAIL"))
-    private void onCopyFrom(ServerInfo serverInfo, CallbackInfo ci) {
-        this.id = ((ISyncedServerInfo) serverInfo).getId();
+    private void onCopyFrom(ServerData other, CallbackInfo ci) {
+        this.id = ((ISyncedServerData) other).meteor$getId();
     }
 
     @Override
-    public UUID getId() {
+    public UUID meteor$getId() {
         return id;
     }
 
     @Override
-    public void setId(UUID id) {
+    public void meteor$setId(UUID id) {
         this.id = id;
     }
 }

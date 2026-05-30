@@ -6,9 +6,9 @@
 package meteordevelopment.meteorclient.mixin;
 
 import meteordevelopment.meteorclient.mixininterface.IServerListAdditionalMethods;
-import meteordevelopment.meteorclient.mixininterface.ISyncedServerInfo;
-import net.minecraft.client.network.ServerInfo;
-import net.minecraft.client.option.ServerList;
+import meteordevelopment.meteorclient.mixininterface.ISyncedServerData;
+import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.client.multiplayer.ServerList;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,29 +20,27 @@ import java.util.stream.Stream;
 
 @Mixin(ServerList.class)
 public class ServerListMixin implements IServerListAdditionalMethods {
-
+    @Shadow
+    @Final
+    private List<ServerData> serverList;
 
     @Shadow
     @Final
-    private List<ServerInfo> servers;
-
-    @Shadow
-    @Final
-    private List<ServerInfo> hiddenServers;
+    private List<ServerData> hiddenServerList;
 
     @Override
-    public @Nullable ServerInfo get(UUID id) {
-        for (ServerInfo serverInfo : this.servers) {
-            var serverId = ((ISyncedServerInfo) serverInfo).getId();
+    public @Nullable ServerData meteor$get(UUID id) {
+        for (ServerData serverData : this.serverList) {
+            var serverId = ((ISyncedServerData) serverData).meteor$getId();
             if (serverId != null && serverId.equals(id)) {
-                return serverInfo;
+                return serverData;
             }
         }
 
-        for (ServerInfo serverInfo : this.hiddenServers) {
-            var serverId = ((ISyncedServerInfo) serverInfo).getId();
+        for (ServerData serverData : this.hiddenServerList) {
+            var serverId = ((ISyncedServerData) serverData).meteor$getId();
             if (serverId != null && serverId.equals(id)) {
-                return serverInfo;
+                return serverData;
             }
         }
 
@@ -50,7 +48,7 @@ public class ServerListMixin implements IServerListAdditionalMethods {
     }
 
     @Override
-    public Stream<ServerInfo> stream() {
-        return Stream.concat(this.servers.stream(), this.hiddenServers.stream());
+    public Stream<ServerData> meteor$stream() {
+        return Stream.concat(this.serverList.stream(), this.hiddenServerList.stream());
     }
 }

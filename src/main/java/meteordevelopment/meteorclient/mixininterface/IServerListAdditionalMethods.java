@@ -5,7 +5,7 @@
 
 package meteordevelopment.meteorclient.mixininterface;
 
-import net.minecraft.client.network.ServerInfo;
+import net.minecraft.client.multiplayer.ServerData;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 public interface IServerListAdditionalMethods {
     @Nullable
-    ServerInfo get(UUID id);
+    ServerData meteor$get(UUID id);
 
-    Stream<ServerInfo> stream();
+    Stream<ServerData> meteor$stream();
 }

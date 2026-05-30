@@ -12,7 +12,7 @@ import meteordevelopment.meteorclient.gui.tabs.WindowTabScreen;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.friends.PlayStatus;
 import meteordevelopment.meteorclient.systems.friends.ServerSync;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screens.Screen;
 
 public class ServerFeaturesTab extends Tab {
     public ServerFeaturesTab() {

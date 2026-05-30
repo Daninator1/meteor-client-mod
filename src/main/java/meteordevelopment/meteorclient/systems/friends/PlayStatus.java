@@ -17,7 +17,7 @@ import meteordevelopment.meteorclient.utils.network.Http;
 import meteordevelopment.meteorclient.utils.network.MeteorExecutor;
 import meteordevelopment.meteorclient.utils.world.TickRate;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import static meteordevelopment.meteorclient.MeteorClient.LOG;
 import static meteordevelopment.meteorclient.MeteorClient.mc;
@@ -47,8 +47,8 @@ public class PlayStatus extends System<PlayStatus> {
     }
 
     @Override
-    public NbtCompound toTag() {
-        NbtCompound tag = new NbtCompound();
+    public CompoundTag toTag() {
+        CompoundTag tag = new CompoundTag();
         tag.putBoolean("enabled", this.enabled);
         tag.putString("name", this.name);
         tag.putString("server", this.server);
@@ -58,12 +58,12 @@ public class PlayStatus extends System<PlayStatus> {
     }
 
     @Override
-    public PlayStatus fromTag(NbtCompound tag) {
-        this.enabled = tag.getBoolean("enabled", this.enabled);
-        this.name = tag.getString("name", this.name);
-        this.server = tag.getString("server", this.server);
-        this.apiKey = tag.getString("apiKey", this.apiKey);
-        this.updateIntervalInSeconds = tag.getInt("updateInterval", this.updateIntervalInSeconds);
+    public PlayStatus fromTag(CompoundTag tag) {
+        this.enabled = tag.getBooleanOr("enabled", this.enabled);
+        this.name = tag.getStringOr("name", this.name);
+        this.server = tag.getStringOr("server", this.server);
+        this.apiKey = tag.getStringOr("apiKey", this.apiKey);
+        this.updateIntervalInSeconds = tag.getIntOr("updateInterval", this.updateIntervalInSeconds);
         return this;
     }
 
@@ -118,13 +118,13 @@ public class PlayStatus extends System<PlayStatus> {
 
     private void sendOwnPlayStatus() {
         PlayStatusEntry entry = null;
-        if (mc.player != null && mc.world != null) {
+        if (mc.player != null && mc.level != null) {
             entry = new PlayStatusEntry(
                 this.name,
-                mc.getSession().getUsername(),
+                mc.getUser().getName(),
                 Utils.getWorldName(),
                 new PlayStatusPosition(mc.player.getX(), mc.player.getY(), mc.player.getZ()),
-                mc.world.getDimensionEntry().getIdAsString()
+                mc.level.dimension().identifier().toString()
             );
         }
 

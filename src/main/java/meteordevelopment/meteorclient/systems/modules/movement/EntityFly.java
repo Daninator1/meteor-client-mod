@@ -6,9 +6,9 @@
 package meteordevelopment.meteorclient.systems.modules.movement;
 
 import meteordevelopment.meteorclient.events.entity.BoatMoveEvent;
-import meteordevelopment.meteorclient.events.entity.LivingEntityMoveEvent;
+import meteordevelopment.meteorclient.events.entity.EntityMoveEvent;
 import meteordevelopment.meteorclient.events.packets.PacketEvent;
-import meteordevelopment.meteorclient.mixininterface.IVec3d;
+import meteordevelopment.meteorclient.mixininterface.IVec3;
 import meteordevelopment.meteorclient.settings.BoolSetting;
 import meteordevelopment.meteorclient.settings.DoubleSetting;
 import meteordevelopment.meteorclient.settings.Setting;
@@ -17,9 +17,9 @@ import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.player.PlayerUtils;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.entity.Entity;
-import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.network.protocol.game.ServerboundMoveVehiclePacket;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
 
 public class EntityFly extends Module {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
@@ -63,38 +63,40 @@ public class EntityFly extends Module {
 
     @EventHandler
     private void onBoatMove(BoatMoveEvent event) {
-        Fly(event.boat, event.boat.getVelocity());
+        Fly(event.boat, event.boat.getKnownSpeed());
     }
 
     @EventHandler
-    private void onLivingEntityMove(LivingEntityMoveEvent event) {
+    private void onEntityMove(EntityMoveEvent event) {
         Fly(event.entity, event.movement);
     }
 
     @EventHandler
     private void onReceivePacket(PacketEvent.Receive event) {
-        if (event.packet instanceof VehicleMoveS2CPacket && cancelServerPackets.get()) {
+        if (event.packet instanceof ServerboundMoveVehiclePacket && cancelServerPackets.get()) {
             event.cancel();
         }
     }
 
-    private void Fly(Entity entity, Vec3d velocity) {
+    private void Fly(Entity entity, Vec3 velocity) {
         if (entity.getControllingPassenger() != mc.player) return;
 
-        entity.setYaw(mc.player.getYaw());
+        if (mc.player != null) {
+            entity.setYRot(mc.player.yHeadRot);
+        }
 
         // Horizontal movement
-        Vec3d vel = PlayerUtils.getHorizontalVelocity(speed.get());
-        double velX = vel.getX();
+        Vec3 vel = PlayerUtils.getHorizontalVelocity(speed.get());
+        double velX = vel.x();
         double velY = 0;
-        double velZ = vel.getZ();
+        double velZ = vel.z();
 
         // Vertical movement
-        if (mc.options.jumpKey.isPressed()) velY += verticalSpeed.get() / 20;
-        if (mc.options.sprintKey.isPressed()) velY -= verticalSpeed.get() / 20;
+        if (mc.options.keyJump.isDown()) velY += verticalSpeed.get() / 20;
+        if (mc.options.keySprint.isDown()) velY -= verticalSpeed.get() / 20;
         else velY -= fallSpeed.get() / 20;
 
         // Apply velocity
-        ((IVec3d) velocity).meteor$set(velX, velY, velZ);
+        ((IVec3) velocity).meteor$set(velX, velY, velZ);
     }
 }

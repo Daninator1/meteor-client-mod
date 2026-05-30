@@ -5,14 +5,14 @@
 
 package meteordevelopment.meteorclient.mixin;
 
-import net.minecraft.client.gui.screen.multiplayer.AddServerScreen;
-import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.screens.DirectJoinServerScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(AddServerScreen.class)
-public interface AddServerScreenAccessor {
-    @Accessor("addressField")
-    TextFieldWidget getAddressField();
+@Mixin(DirectJoinServerScreen.class)
+public interface DirectJoinServerScreenAccessor {
+    @Accessor("ipEdit")
+    EditBox getIpEdit();
 }
 

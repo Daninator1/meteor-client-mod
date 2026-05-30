@@ -21,7 +21,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -108,7 +108,7 @@ public class Flamethrower extends Module {
         for (Entity entity : mc.level.entitiesForRendering()) {
             if (!entities.get().contains(entity.getType()) || !PlayerUtils.isWithin(entity, distance.get())) continue;
             if (entity == mc.player) continue;
-            if (!Friends.get().shouldAttack((PlayerEntity) entity)) continue;
+            if (!Friends.get().shouldAttack((Player) entity)) continue;
             if (!entity.isAlive() || entity.isInPowderSnow || entity.isInWaterOrRain() || entity.fireImmune())
                 continue;
 

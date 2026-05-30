@@ -115,7 +115,7 @@ public class PlayStatusHud extends HudElement {
         double width = renderer.textWidth("Play Status:", shadow.get(), getScale());
         double height = renderer.textHeight(shadow.get(), getScale());
 
-        if (mc.world == null) {
+        if (mc.level == null) {
             setSize(width, height);
             return;
         }
@@ -148,7 +148,7 @@ public class PlayStatusHud extends HudElement {
 
         renderer.text("Play Status:", x + border.get() + alignX(renderer.textWidth("Players:", shadow.get(), getScale()), alignment.get()), y, secondaryColor.get(), shadow.get(), getScale());
 
-        if (mc.world == null) return;
+        if (mc.level == null) return;
         if (!PlayStatus.get().enabled) return;
         double spaceWidth = renderer.textWidth(" ", shadow.get(), getScale());
 

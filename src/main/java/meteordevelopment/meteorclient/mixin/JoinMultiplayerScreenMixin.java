@@ -5,28 +5,45 @@
 
 package meteordevelopment.meteorclient.mixin;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import meteordevelopment.meteorclient.gui.GuiThemes;
+import meteordevelopment.meteorclient.mixininterface.IServerListAdditionalMethods;
+import meteordevelopment.meteorclient.mixininterface.ISyncedServerData;
 import meteordevelopment.meteorclient.systems.config.Config;
+import meteordevelopment.meteorclient.systems.friends.ServerSync;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.player.NameProtect;
 import meteordevelopment.meteorclient.systems.proxies.Proxies;
 import meteordevelopment.meteorclient.systems.proxies.Proxy;
+import meteordevelopment.meteorclient.utils.misc.PlayStatusSeparatorEntry;
+import meteordevelopment.meteorclient.utils.network.MeteorExecutor;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
+import net.minecraft.client.gui.screens.multiplayer.ServerSelectionList;
+import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.client.multiplayer.ServerList;
 import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 @Mixin(JoinMultiplayerScreen.class)
 public abstract class JoinMultiplayerScreenMixin extends Screen {
+    @Shadow
+    private ServerList servers;
+    @Shadow
+    private Button selectButton;
     @Unique
     private int textColor1;
     @Unique
@@ -91,6 +108,68 @@ public abstract class JoinMultiplayerScreenMixin extends Screen {
 
         positionButton(accounts, accountPos, proxiesVisible && proxiesPos == accountPos, true);
         positionButton(proxies, proxiesPos, accountsVisible && accountPos == proxiesPos, false);
+    }
+
+    @Inject(method = "init", at = @At("HEAD"))
+    private void onInitSyncServers(CallbackInfo info) {
+        if (!ServerSync.get().enabled) return;
+
+        var syncedServerInfos = ServerSync.get().getServers();
+
+        // add or update servers
+        for (meteordevelopment.meteorclient.utils.misc.SyncedServerInfo syncedServerInfo : syncedServerInfos) {
+
+            var existingServerInfo = ((IServerListAdditionalMethods) this.servers).meteor$get(syncedServerInfo.id);
+
+            if (existingServerInfo != null) {
+                existingServerInfo.name = syncedServerInfo.name;
+                existingServerInfo.ip = syncedServerInfo.ip;
+            } else {
+                var newServerInfo = new ServerData(syncedServerInfo.name, syncedServerInfo.ip, ServerData.Type.OTHER);
+                ((ISyncedServerData) newServerInfo).meteor$setId(syncedServerInfo.id);
+                this.servers.add(newServerInfo, false);
+            }
+        }
+
+        // remove servers
+        var localServersToDelete = new ArrayList<ServerData>();
+
+        ((IServerListAdditionalMethods) this.servers).meteor$stream().forEach(localServerInfo -> {
+            var localServerId = ((ISyncedServerData) localServerInfo).meteor$getId();
+            if (localServerId == null) return;
+            if (Arrays.stream(syncedServerInfos).noneMatch(syncedServerInfo -> syncedServerInfo.id.equals(localServerId))) {
+                localServersToDelete.add(localServerInfo);
+            }
+        });
+
+        localServersToDelete.forEach(localServerInfo -> this.servers.remove(localServerInfo));
+
+        this.servers.save();
+    }
+
+    @Inject(
+        method = "deleteCallback",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/Minecraft;setScreen(Lnet/minecraft/client/gui/screens/Screen;)V",
+            shift = At.Shift.BEFORE
+        )
+    )
+    private void onRemoveEntry(boolean result, CallbackInfo ci, @Local(name = "entry") ServerSelectionList.Entry entry) {
+        if (!ServerSync.get().enabled) return;
+
+        if (result && entry instanceof ServerSelectionList.OnlineServerEntry onlineServerEntry) {
+            var serverData = onlineServerEntry.getServerData();
+            var syncedServerData = (ISyncedServerData) serverData;
+            MeteorExecutor.execute(() -> ServerSync.get().removeServer(syncedServerData.meteor$getId()));
+        }
+    }
+
+    @Inject(method = "onSelectedChange", at = @At("RETURN"))
+    private void onUpdateButtonActivationStates(CallbackInfo info, @Local(name = "entry") ServerSelectionList.Entry entry) {
+        if (entry instanceof PlayStatusSeparatorEntry) {
+            this.selectButton.active = false;
+        }
     }
 
     @Unique

@@ -8,11 +8,9 @@ package meteordevelopment.meteorclient.commands.commands;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import meteordevelopment.meteorclient.commands.Command;
 import meteordevelopment.meteorclient.systems.friends.PlayStatus;
-import net.minecraft.command.CommandSource;
+import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 
 import java.util.Arrays;
-
-import static com.mojang.brigadier.Command.SINGLE_SUCCESS;
 
 public class PlayStatusCommand extends Command {
     public PlayStatusCommand() {
@@ -20,7 +18,7 @@ public class PlayStatusCommand extends Command {
     }
 
     @Override
-    public void build(LiteralArgumentBuilder<CommandSource> builder) {
+    public void build(LiteralArgumentBuilder<ClientSuggestionProvider> builder) {
         builder.executes(context -> {
             if (!PlayStatus.get().enabled) {
                 error("Play status is disabled.");

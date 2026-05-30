@@ -441,9 +441,9 @@ public class Utils {
     }
 
     public static boolean isOnlineModeServer() {
-        var networkHandler = mc.getNetworkHandler();
-        if (networkHandler == null) return false;
-        return networkHandler.getConnection().isEncrypted();
+        var clientPacketListener = mc.getConnection();
+        if (clientPacketListener == null) return false;
+        return clientPacketListener.getConnection().isEncrypted();
     }
 
     public static String nameToTitle(String name) {

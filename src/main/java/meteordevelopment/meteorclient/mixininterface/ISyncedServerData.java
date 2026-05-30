@@ -7,7 +7,7 @@ package meteordevelopment.meteorclient.mixininterface;
 
 import java.util.UUID;
 
-public interface ISyncedServerInfo {
-    UUID getId();
-    void setId(UUID id);
+public interface ISyncedServerData {
+    UUID meteor$getId();
+    void meteor$setId(UUID id);
 }

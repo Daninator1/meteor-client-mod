@@ -38,7 +38,6 @@ public class FriendsTab extends Tab {
     }
 
     private static class FriendsScreen extends WindowTabScreen {
-
         public FriendsScreen(GuiTheme theme, Tab tab) {
             super(theme, tab);
         }

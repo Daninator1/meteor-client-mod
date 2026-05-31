@@ -96,7 +96,7 @@ public class ManageServerScreenMixin extends Screen {
         this.nameEdit.setMaxLength(1000);
     }
 
-    @Inject(method = "onClose", at = @At("HEAD"))
+    @Inject(method = "onAdd", at = @At("HEAD"))
     private void onAddAndClose(CallbackInfo info) {
         if (!ServerSync.get().enabled) return;
 

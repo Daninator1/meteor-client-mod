@@ -18,6 +18,7 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -72,6 +73,11 @@ public class Http {
 
         public Request apiKey(String apiKey) {
             builder.header("Api-Key", apiKey);
+            return this;
+        }
+
+        public Request timeout(Duration timeout) {
+            builder.timeout(timeout);
             return this;
         }
 

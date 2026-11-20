@@ -192,6 +192,7 @@
     "ServerDataMixin",
     "ServerListMixin",
     "ServerPlayerMixin",
+    "ServerSelectionListAccessor",
     "ServerSelectionListMixin",
     "ShaderManagerMixin",
     "ShulkerBoxMenuAccessor",

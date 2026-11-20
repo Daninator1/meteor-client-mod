@@ -12,12 +12,14 @@ import meteordevelopment.meteorclient.utils.network.Http;
 import net.minecraft.nbt.CompoundTag;
 
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;
 
 import static meteordevelopment.meteorclient.MeteorClient.LOG;
 
 public class ServerSync extends System<ServerSync> {
+    private static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(5);
 
     public boolean enabled = false;
     public String server = "";
@@ -55,10 +57,15 @@ public class ServerSync extends System<ServerSync> {
     }
 
     public Optional<SyncedServerInfo[]> getServers() {
+        return getServers(this.server, this.apiKey);
+    }
+
+    public Optional<SyncedServerInfo[]> getServers(String server, String apiKey) {
         try {
             HttpResponse<SyncedServerInfo[]> httpResponse = Http
-                .get(this.server + "/server")
-                .apiKey(this.apiKey)
+                .get(server + "/server")
+                .timeout(REQUEST_TIMEOUT)
+                .apiKey(apiKey)
                 .exceptionHandler(e -> LOG.error("Failed to fetch synced servers", e))
                 .sendJsonResponse(SyncedServerInfo[].class);
 

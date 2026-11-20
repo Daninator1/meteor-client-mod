@@ -15,6 +15,7 @@ import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.player.NameProtect;
 import meteordevelopment.meteorclient.systems.proxies.Proxies;
 import meteordevelopment.meteorclient.systems.proxies.Proxy;
+import meteordevelopment.meteorclient.utils.misc.SyncedServerInfo;
 import meteordevelopment.meteorclient.utils.network.MeteorExecutor;
 import meteordevelopment.meteorclient.utils.render.MeteorToast;
 import meteordevelopment.meteorclient.utils.render.color.Color;
@@ -34,8 +35,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
@@ -67,6 +69,13 @@ public abstract class JoinMultiplayerScreenMixin extends Screen {
     private static final int MARGIN = 3;
     @Unique
     private static final int GAP = 2;
+    @Unique
+    private static final long SERVER_SYNC_TIMEOUT_MILLIS = 8000;
+
+    @Unique
+    private UUID serverSyncRequestId;
+    @Unique
+    private boolean serverSyncLoading;
 
     public JoinMultiplayerScreenMixin(Component title) {
         super(title);
@@ -107,6 +116,8 @@ public abstract class JoinMultiplayerScreenMixin extends Screen {
 
         positionButton(accounts, accountPos, proxiesVisible && proxiesPos == accountPos, true);
         positionButton(proxies, proxiesPos, accountsVisible && accountPos == proxiesPos, false);
+
+        setServerListLoading(serverSyncLoading);
     }
 
     @Inject(method = "init", at = @At(
@@ -115,27 +126,106 @@ public abstract class JoinMultiplayerScreenMixin extends Screen {
         shift = At.Shift.AFTER
     ))
     private void onInitSyncServers(CallbackInfo info) {
-        if (!ServerSync.get().enabled) return;
+        ServerSync sync = ServerSync.get();
+        serverSyncRequestId = null;
+        serverSyncLoading = false;
+        if (!sync.enabled) return;
 
-        var syncedServerInfos = ServerSync.get().getServers();
-        if (syncedServerInfos.isEmpty()) {
-            mc.gui.toastManager().addToast(new MeteorToast.Builder("Server Sync")
-                .text("Failed to fetch servers")
-                .build());
+        UUID requestId = UUID.randomUUID();
+        serverSyncRequestId = requestId;
+        serverSyncLoading = true;
+        String server = sync.server;
+        String apiKey = sync.apiKey;
+
+        MeteorExecutor.execute(() -> {
+            Optional<SyncedServerInfo[]> response = sync.getServers(server, apiKey);
+            mc.execute(() -> finishServerSync(requestId, sync, server, apiKey, response));
+        });
+
+        CompletableFuture.delayedExecutor(SERVER_SYNC_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)
+            .execute(() -> mc.execute(() -> onServerSyncTimeout(requestId)));
+    }
+
+    @Inject(method = "init", at = @At("TAIL"))
+    private void onInitComplete(CallbackInfo info) {
+        setServerListLoading(serverSyncLoading);
+    }
+
+    @Inject(method = "removed", at = @At("HEAD"))
+    private void onRemoved(CallbackInfo info) {
+        serverSyncRequestId = null;
+        serverSyncLoading = false;
+    }
+
+    @Unique
+    private void finishServerSync(UUID requestId, ServerSync sync, String server, String apiKey, Optional<SyncedServerInfo[]> response) {
+        if (!isCurrentServerSyncRequest(requestId)) return;
+
+        if (!sync.enabled) {
+            serverSyncLoading = false;
+            setServerListLoading(false);
             return;
         }
-        var serversFromSync = syncedServerInfos.get();
 
+        if (!Objects.equals(sync.server, server) || !Objects.equals(sync.apiKey, apiKey)) {
+            finishServerSyncWithWarning("Sync settings changed");
+            return;
+        }
+
+        if (response.isEmpty()) {
+            finishServerSyncWithWarning("Failed to fetch servers");
+            return;
+        }
+
+        updateServers(response.get());
+
+        ServerSelectionList selectionList = ((JoinMultiplayerScreenAccessor) this).meteor$getServerSelectionList();
+        if (selectionList != null) ((ServerSelectionListAccessor) selectionList).meteor$refreshEntries();
+
+        serverSyncLoading = false;
+        setServerListLoading(false);
+    }
+
+    @Unique
+    private void onServerSyncTimeout(UUID requestId) {
+        if (!isCurrentServerSyncRequest(requestId)) return;
+        finishServerSyncWithWarning("Server sync timed out");
+    }
+
+    @Unique
+    private boolean isCurrentServerSyncRequest(UUID requestId) {
+        return requestId.equals(serverSyncRequestId) && serverSyncLoading && mc.gui.screen() == this;
+    }
+
+    @Unique
+    private void finishServerSyncWithWarning(String message) {
+        serverSyncLoading = false;
+        setServerListLoading(false);
+        mc.gui.toastManager().addToast(new MeteorToast.Builder("Server Sync")
+            .text(message)
+            .build());
+    }
+
+    @Unique
+    private void setServerListLoading(boolean loading) {
+        ServerSelectionList selectionList = ((JoinMultiplayerScreenAccessor) this).meteor$getServerSelectionList();
+        if (selectionList == null) return;
+
+        selectionList.visible = !loading;
+        selectionList.active = !loading;
+    }
+
+    @Unique
+    private void updateServers(SyncedServerInfo[] syncedServerInfos) {
         // add or update servers
-        for (meteordevelopment.meteorclient.utils.misc.SyncedServerInfo syncedServerInfo : serversFromSync) {
-
+        for (SyncedServerInfo syncedServerInfo : syncedServerInfos) {
             var existingServerInfo = ((IServerListAdditionalMethods) this.servers).meteor$get(syncedServerInfo.id);
 
             if (existingServerInfo != null) {
                 existingServerInfo.name = syncedServerInfo.name;
                 existingServerInfo.ip = syncedServerInfo.address;
             } else {
-                var newServerInfo = new ServerData(syncedServerInfo.name, syncedServerInfo.address, ServerData.Type.OTHER);
+                ServerData newServerInfo = new ServerData(syncedServerInfo.name, syncedServerInfo.address, ServerData.Type.OTHER);
                 ((ISyncedServerData) newServerInfo).meteor$setId(syncedServerInfo.id);
                 this.servers.add(newServerInfo, false);
             }
@@ -143,16 +233,14 @@ public abstract class JoinMultiplayerScreenMixin extends Screen {
 
         // remove servers
         var localServersToDelete = new ArrayList<ServerData>();
-
         ((IServerListAdditionalMethods) this.servers).meteor$stream().forEach(localServerInfo -> {
             var localServerId = ((ISyncedServerData) localServerInfo).meteor$getId();
             if (localServerId == null) return;
-            if (Arrays.stream(serversFromSync).noneMatch(syncedServerInfo -> syncedServerInfo.id.equals(localServerId))) {
+            if (Arrays.stream(syncedServerInfos).noneMatch(syncedServerInfo -> syncedServerInfo.id.equals(localServerId))) {
                 localServersToDelete.add(localServerInfo);
             }
         });
-
-        localServersToDelete.forEach(localServerInfo -> this.servers.remove(localServerInfo));
+        localServersToDelete.forEach(this.servers::remove);
 
         this.servers.save();
     }
@@ -192,6 +280,11 @@ public abstract class JoinMultiplayerScreenMixin extends Screen {
     @Override
     public void extractRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
         super.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
+
+        if (serverSyncLoading) {
+            String loadingText = "Loading synced servers...";
+            graphics.text(mc.font, loadingText, (this.width - mc.font.width(loadingText)) / 2, this.height / 2, 0xFFFFFFFF);
+        }
 
         Config config = Config.get();
 

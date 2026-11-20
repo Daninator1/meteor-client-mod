@@ -15,7 +15,6 @@ import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.systems.modules.player.NameProtect;
 import meteordevelopment.meteorclient.systems.proxies.Proxies;
 import meteordevelopment.meteorclient.systems.proxies.Proxy;
-import meteordevelopment.meteorclient.utils.misc.PlayStatusSeparatorEntry;
 import meteordevelopment.meteorclient.utils.network.MeteorExecutor;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -43,8 +42,6 @@ import static meteordevelopment.meteorclient.MeteorClient.mc;
 public abstract class JoinMultiplayerScreenMixin extends Screen {
     @Shadow
     private ServerList servers;
-    @Shadow
-    private Button selectButton;
     @Unique
     private int textColor1;
     @Unique
@@ -156,7 +153,7 @@ public abstract class JoinMultiplayerScreenMixin extends Screen {
         method = "deleteCallback",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/client/Minecraft;setScreen(Lnet/minecraft/client/gui/screens/Screen;)V",
+            target = "Lnet/minecraft/client/gui/Gui;setScreen(Lnet/minecraft/client/gui/screens/Screen;)V",
             shift = At.Shift.BEFORE
         )
     )
@@ -167,13 +164,6 @@ public abstract class JoinMultiplayerScreenMixin extends Screen {
             var serverData = onlineServerEntry.getServerData();
             var syncedServerData = (ISyncedServerData) serverData;
             MeteorExecutor.execute(() -> ServerSync.get().removeServer(syncedServerData.meteor$getId()));
-        }
-    }
-
-    @Inject(method = "onSelectedChange", at = @At("RETURN"))
-    private void onUpdateButtonActivationStates(CallbackInfo info, @Local(name = "entry") ServerSelectionList.Entry entry) {
-        if (entry instanceof PlayStatusSeparatorEntry) {
-            this.selectButton.active = false;
         }
     }
 

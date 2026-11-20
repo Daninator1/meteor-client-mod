@@ -26,6 +26,7 @@ import net.minecraft.client.gui.screens.multiplayer.ServerSelectionList;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.ServerList;
 import net.minecraft.network.chat.Component;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -83,7 +84,7 @@ public abstract class JoinMultiplayerScreenMixin extends Screen {
 
         if (accounts == null) {
             accounts = addRenderableWidget(
-                new Button.Builder(Component.literal("Accounts"), _ -> minecraft.setScreen(GuiThemes.get().accountsScreen()))
+                new Button.Builder(Component.literal("Accounts"), _ -> minecraft.gui.setScreen(GuiThemes.get().accountsScreen()))
                     .size(BUTTON_WIDTH, BUTTON_HEIGHT)
                     .build()
             );
@@ -91,7 +92,7 @@ public abstract class JoinMultiplayerScreenMixin extends Screen {
 
         if (proxies == null) {
             proxies = addRenderableWidget(
-                new Button.Builder(Component.literal("Proxies"), _ -> minecraft.setScreen(GuiThemes.get().proxiesScreen()))
+                new Button.Builder(Component.literal("Proxies"), _ -> minecraft.gui.setScreen(GuiThemes.get().proxiesScreen()))
                     .size(BUTTON_WIDTH, BUTTON_HEIGHT)
                     .build()
             );
@@ -191,7 +192,7 @@ public abstract class JoinMultiplayerScreenMixin extends Screen {
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
+    public void extractRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTicks) {
         super.extractRenderState(graphics, mouseX, mouseY, deltaTicks);
 
         Config config = Config.get();

@@ -19,6 +19,7 @@ import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.utils.PreInit;
 import meteordevelopment.meteorclient.utils.Utils;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
+import meteordevelopment.meteorclient.utils.player.InvUtils;
 import meteordevelopment.meteorclient.utils.player.PlayerUtils;
 import meteordevelopment.meteorclient.utils.world.Dimension;
 import meteordevelopment.meteorclient.utils.world.TickRate;
@@ -111,14 +112,14 @@ public class MeteorStarscript {
         ss.set("camera", new ValueMap()
             .set("pos", new ValueMap()
                 .set("_toString", () -> posString(false, true))
-                .set("x", () -> Value.number(mc.gameRenderer.getMainCamera().position().x))
-                .set("y", () -> Value.number(mc.gameRenderer.getMainCamera().position().y))
-                .set("z", () -> Value.number(mc.gameRenderer.getMainCamera().position().z))
+                .set("x", () -> Value.number(mc.gameRenderer.mainCamera().position().x))
+                .set("y", () -> Value.number(mc.gameRenderer.mainCamera().position().y))
+                .set("z", () -> Value.number(mc.gameRenderer.mainCamera().position().z))
             )
             .set("opposite_dim_pos", new ValueMap()
                 .set("_toString", () -> posString(true, true))
                 .set("x", () -> oppositeX(true))
-                .set("y", () -> Value.number(mc.gameRenderer.getMainCamera().position().y))
+                .set("y", () -> Value.number(mc.gameRenderer.mainCamera().position().y))
                 .set("z", () -> oppositeZ(true))
             )
 
@@ -407,13 +408,7 @@ public class MeteorStarscript {
         Item item = BuiltInRegistries.ITEM.getValue(id);
         if (item == Items.AIR || mc.player == null) return Value.number(0);
 
-        int count = 0;
-        for (int i = 0; i < mc.player.getInventory().getContainerSize(); i++) {
-            ItemStack itemStack = mc.player.getInventory().getItem(i);
-            if (itemStack.getItem() == item) count += itemStack.getCount();
-        }
-
-        return Value.number(count);
+        return Value.number(InvUtils.find(item).count());
     }
 
     private static Value getMeteorPrefix() {
@@ -459,7 +454,7 @@ public class MeteorStarscript {
     }
 
     private static Value oppositeX(boolean camera) {
-        double x = camera ? mc.gameRenderer.getMainCamera().position().x : (mc.player != null ? mc.player.getX() : 0);
+        double x = camera ? mc.gameRenderer.mainCamera().position().x : (mc.player != null ? mc.player.getX() : 0);
         Dimension dimension = PlayerUtils.getDimension();
 
         if (dimension == Dimension.Overworld) x /= 8;
@@ -469,7 +464,7 @@ public class MeteorStarscript {
     }
 
     private static Value oppositeZ(boolean camera) {
-        double z = camera ? mc.gameRenderer.getMainCamera().position().z : (mc.player != null ? mc.player.getZ() : 0);
+        double z = camera ? mc.gameRenderer.mainCamera().position().z : (mc.player != null ? mc.player.getZ() : 0);
         Dimension dimension = PlayerUtils.getDimension();
 
         if (dimension == Dimension.Overworld) z /= 8;
@@ -480,7 +475,7 @@ public class MeteorStarscript {
 
     private static Value yaw(boolean camera) {
         float yaw;
-        if (camera) yaw = mc.gameRenderer.getMainCamera().yRot();
+        if (camera) yaw = mc.gameRenderer.mainCamera().yRot();
         else yaw = mc.player != null ? mc.player.getYRot() : 0;
         yaw %= 360;
 
@@ -492,7 +487,7 @@ public class MeteorStarscript {
 
     private static Value pitch(boolean camera) {
         float pitch;
-        if (camera) pitch = mc.gameRenderer.getMainCamera().xRot();
+        if (camera) pitch = mc.gameRenderer.mainCamera().xRot();
         else pitch = mc.player != null ? mc.player.getXRot() : 0;
         pitch %= 360;
 
@@ -504,7 +499,7 @@ public class MeteorStarscript {
 
     private static Value direction(boolean camera) {
         float yaw;
-        if (camera) yaw = mc.gameRenderer.getMainCamera().yRot();
+        if (camera) yaw = mc.gameRenderer.mainCamera().yRot();
         else yaw = mc.player != null ? mc.player.getYRot() : 0;
 
         return wrap(HorizontalDirection.get(yaw));
@@ -551,7 +546,7 @@ public class MeteorStarscript {
 
     private static Value posString(boolean opposite, boolean camera) {
         Vec3 pos;
-        if (camera) pos = mc.gameRenderer.getMainCamera().position();
+        if (camera) pos = mc.gameRenderer.mainCamera().position();
         else pos = mc.player != null ? mc.player.position() : Vec3.ZERO;
 
         double x = pos.x;

@@ -15,11 +15,13 @@ import meteordevelopment.meteorclient.utils.player.FindItemResult;
 import meteordevelopment.meteorclient.utils.player.InvUtils;
 import meteordevelopment.meteorclient.utils.player.PlayerUtils;
 import meteordevelopment.meteorclient.utils.player.Rotations;
+import meteordevelopment.meteorclient.utils.world.BlockUtils;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
@@ -79,11 +81,11 @@ public class Flamethrower extends Module {
         .name("entities")
         .description("Entities to cook.")
         .defaultValue(
-            EntityType.PIG,
-            EntityType.COW,
-            EntityType.SHEEP,
-            EntityType.CHICKEN,
-            EntityType.RABBIT
+            EntityTypes.PIG,
+            EntityTypes.COW,
+            EntityTypes.SHEEP,
+            EntityTypes.CHICKEN,
+            EntityTypes.RABBIT
         )
         .build()
     );
@@ -142,8 +144,8 @@ public class Flamethrower extends Module {
             }
         } else {
             if (ticks >= tickInterval.get() && !entity.isOnFire()) {
-                mc.gameMode.useItemOn(mc.player, hand, new BlockHitResult(
-                    entity.position().subtract(new Vec3(0, 1, 0)), Direction.UP, entity.blockPosition().below(), false));
+                BlockUtils.interact(new BlockHitResult(
+                    entity.position().subtract(new Vec3(0, 1, 0)), Direction.UP, entity.blockPosition().below(), false), hand, false);
                 ticks = 0;
             }
         }

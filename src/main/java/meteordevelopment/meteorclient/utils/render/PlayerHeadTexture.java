@@ -1,8 +1,8 @@
 package meteordevelopment.meteorclient.utils.render;
 
 import com.mojang.blaze3d.platform.TextureUtil;
-import com.mojang.blaze3d.textures.FilterMode;
-import com.mojang.blaze3d.textures.TextureFormat;
+import com.mojang.renderpearl.api.GpuFormat;
+import com.mojang.renderpearl.api.textures.FilterMode;
 import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.renderer.Texture;
 import meteordevelopment.meteorclient.utils.network.Http;
@@ -23,13 +23,13 @@ import static meteordevelopment.meteorclient.MeteorClient.mc;
 public class PlayerHeadTexture extends Texture {
 
     public PlayerHeadTexture(byte[] head) {
-        super(8, 8, TextureFormat.RGBA8, FilterMode.NEAREST, FilterMode.NEAREST);
+        super(8, 8, GpuFormat.RGBA8_UNORM, FilterMode.NEAREST, FilterMode.NEAREST);
 
         upload(BufferUtils.createByteBuffer(head.length).put(head));
     }
 
     public PlayerHeadTexture() {
-        super(8, 8, TextureFormat.RGBA8, FilterMode.NEAREST, FilterMode.NEAREST);
+        super(8, 8, GpuFormat.RGBA8_UNORM, FilterMode.NEAREST, FilterMode.NEAREST);
 
         try (InputStream inputStream = mc.getResourceManager().getResource(MeteorClient.identifier("textures/steve.png")).get().open()) {
             ByteBuffer data = TextureUtil.readResource(inputStream);

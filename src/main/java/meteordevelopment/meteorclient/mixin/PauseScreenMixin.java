@@ -38,7 +38,7 @@ public abstract class PauseScreenMixin extends Screen {
     )
     private void OnCreatePauseMenuAfterFirstAddChild(CallbackInfo info, @Local(name = "helper") GridLayout.RowHelper helper) {
         helper.addChild(Button.builder(Component.translatable("menu.multiplayer"), _ -> {
-            this.minecraft.setScreen(new JoinMultiplayerScreen(this));
+            this.minecraft.gui.setScreen(new JoinMultiplayerScreen(this));
         }).width(204).build(), 2);
     }
 }

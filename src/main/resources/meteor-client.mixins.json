@@ -68,6 +68,7 @@
     "CompassAngleStateMixin",
     "ComponentMixin",
     "CompressionDecoderMixin",
+    "ConnectionAccessor",
     "ConnectionMixin",
     "ConnectScreenMixin",
     "CrashReportMixin",

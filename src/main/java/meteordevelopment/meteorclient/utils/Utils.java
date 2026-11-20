@@ -441,7 +441,12 @@ public class Utils {
     public static boolean isOnlineModeServer() {
         var clientPacketListener = mc.getConnection();
         if (clientPacketListener == null) return false;
-        return clientPacketListener.getConnection().isEncrypted();
+
+        var channel = ((ConnectionAccessor) clientPacketListener.getConnection()).meteor$getChannel();
+        if (channel == null || !channel.isOpen()) return false;
+
+        var pipeline = channel.pipeline();
+        return pipeline.get("decrypt") != null && pipeline.get("encrypt") != null;
     }
 
     public static String nameToTitle(String name) {

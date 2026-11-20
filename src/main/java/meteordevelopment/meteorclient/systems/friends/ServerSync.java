@@ -11,6 +11,8 @@ import meteordevelopment.meteorclient.utils.misc.SyncedServerInfo;
 import meteordevelopment.meteorclient.utils.network.Http;
 import net.minecraft.nbt.CompoundTag;
 
+import java.net.http.HttpResponse;
+import java.util.Optional;
 import java.util.UUID;
 
 import static meteordevelopment.meteorclient.MeteorClient.LOG;
@@ -52,21 +54,38 @@ public class ServerSync extends System<ServerSync> {
         return this;
     }
 
-    public SyncedServerInfo[] getServers() {
+    public Optional<SyncedServerInfo[]> getServers() {
         try {
-            SyncedServerInfo[] response = Http
+            HttpResponse<SyncedServerInfo[]> httpResponse = Http
                 .get(this.server + "/server")
                 .apiKey(this.apiKey)
-                .sendJson(SyncedServerInfo[].class);
+                .exceptionHandler(e -> LOG.error("Failed to fetch synced servers", e))
+                .sendJsonResponse(SyncedServerInfo[].class);
 
-            if (response == null) return new SyncedServerInfo[0];
+            if (httpResponse.statusCode() != Http.SUCCESS) {
+                LOG.warn("Failed to fetch synced servers: HTTP status {}", httpResponse.statusCode());
+                return Optional.empty();
+            }
 
-            return response;
+            SyncedServerInfo[] response = httpResponse.body();
+            if (response == null) {
+                LOG.warn("Failed to fetch synced servers: response body was empty");
+                return Optional.empty();
+            }
+
+            for (SyncedServerInfo serverInfo : response) {
+                if (serverInfo == null || serverInfo.id == null || serverInfo.name == null || serverInfo.name.isBlank() || serverInfo.address == null || serverInfo.address.isBlank()) {
+                    LOG.warn("Failed to fetch synced servers: response contains an incomplete server entry");
+                    return Optional.empty();
+                }
+            }
+
+            return Optional.of(response);
         } catch (Exception e) {
-            LOG.error(e.getMessage());
+            LOG.error("Failed to fetch synced servers", e);
         }
 
-        return new SyncedServerInfo[0];
+        return Optional.empty();
     }
 
     public void addOrUpdateServer(SyncedServerInfo serverInfo) {

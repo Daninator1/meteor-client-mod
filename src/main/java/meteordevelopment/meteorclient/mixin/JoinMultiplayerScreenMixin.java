@@ -16,6 +16,7 @@ import meteordevelopment.meteorclient.systems.modules.player.NameProtect;
 import meteordevelopment.meteorclient.systems.proxies.Proxies;
 import meteordevelopment.meteorclient.systems.proxies.Proxy;
 import meteordevelopment.meteorclient.utils.network.MeteorExecutor;
+import meteordevelopment.meteorclient.utils.render.MeteorToast;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -117,9 +118,16 @@ public abstract class JoinMultiplayerScreenMixin extends Screen {
         if (!ServerSync.get().enabled) return;
 
         var syncedServerInfos = ServerSync.get().getServers();
+        if (syncedServerInfos.isEmpty()) {
+            mc.gui.toastManager().addToast(new MeteorToast.Builder("Server Sync")
+                .text("Failed to fetch servers")
+                .build());
+            return;
+        }
+        var serversFromSync = syncedServerInfos.get();
 
         // add or update servers
-        for (meteordevelopment.meteorclient.utils.misc.SyncedServerInfo syncedServerInfo : syncedServerInfos) {
+        for (meteordevelopment.meteorclient.utils.misc.SyncedServerInfo syncedServerInfo : serversFromSync) {
 
             var existingServerInfo = ((IServerListAdditionalMethods) this.servers).meteor$get(syncedServerInfo.id);
 
@@ -139,7 +147,7 @@ public abstract class JoinMultiplayerScreenMixin extends Screen {
         ((IServerListAdditionalMethods) this.servers).meteor$stream().forEach(localServerInfo -> {
             var localServerId = ((ISyncedServerData) localServerInfo).meteor$getId();
             if (localServerId == null) return;
-            if (Arrays.stream(syncedServerInfos).noneMatch(syncedServerInfo -> syncedServerInfo.id.equals(localServerId))) {
+            if (Arrays.stream(serversFromSync).noneMatch(syncedServerInfo -> syncedServerInfo.id.equals(localServerId))) {
                 localServersToDelete.add(localServerInfo);
             }
         });
